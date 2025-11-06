@@ -6,79 +6,79 @@ app.use(express.json());
 
 const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
-// Validación de configuración de base de datos
+// Ensure database configuration exists
 if (!DATABASE_URL) {
-    console.error("❌ ERROR: No se encontró DATABASE_URL en las variables de entorno");
-    console.error("Asegúrate de tener un archivo .env con la variable DATABASE_URL");
+    console.error("ERROR: DATABASE_URL not found in environment variables");
+    console.error("Make sure you have a .env file with DATABASE_URL set");
     process.exit(1);
 }
 
-// Configuración del pool de conexiones
+// Configure connection pool
 const pool = new Pool({
     connectionString: DATABASE_URL,
     ssl: DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
-// Función para probar la conexión a la base de datos
+// Try to connect to the database and check the table
 async function testDatabaseConnection() {
-    console.log("🔄 Intentando conectar a la base de datos...");
-    console.log("📍 Host:", DATABASE_URL.split("@")[1]?.split("/")[0] || "No disponible");
+    console.log("Attempting to connect to the database...");
+    console.log("Host:", DATABASE_URL.split("@")[1]?.split("/")[0] || "Unavailable");
 
     try {
         const client = await pool.connect();
-        console.log("✅ Conexión a la base de datos exitosa");
+        console.log("Database connection successful");
 
-        // Verificar si la tabla existe
+        // Check if the incidents table exists
         const tableCheck = await client.query(`
             SELECT EXISTS (
-                SELECT FROM information_schema.tables 
+                SELECT FROM information_schema.tables
                 WHERE table_name = 'incidents'
             );
         `);
 
         if (tableCheck.rows[0].exists) {
-            console.log("✅ La tabla 'incidents' existe en la base de datos");
+            console.log("Table 'incidents' exists");
 
-            // Contar registros existentes
+            // Count existing records
             const countResult = await client.query("SELECT COUNT(*) FROM incidents");
-            console.log(`📊 Registros actuales en la tabla: ${countResult.rows[0].count}`);
+            console.log(`Current records in table: ${countResult.rows[0].count}`);
         } else {
-            console.warn("⚠️  La tabla 'incidents' NO existe. ");
+            console.warn("Table 'incidents' does not exist");
         }
 
         client.release();
         return true;
     } catch (err) {
-        console.error("❌ Error al conectar con la base de datos:");
-        console.error("   Mensaje:", err.message);
-        console.error("   Código:", err.code);
+        console.error("Error connecting to the database:");
+        console.error("  Message:", err.message);
+        console.error("  Code:", err.code);
 
         if (err.code === 'ENOTFOUND') {
-            console.error("   → No se pudo resolver el host de la base de datos");
+            console.error("  → Could not resolve database host");
         } else if (err.code === 'ECONNREFUSED') {
-            console.error("   → La conexión fue rechazada. Verifica que el servidor esté activo");
+            console.error("  → Connection refused. Check if the server is running");
         } else if (err.code === '28P01') {
-            console.error("   → Autenticación fallida. Verifica usuario y contraseña");
+            console.error("  → Authentication failed. Check username and password");
         } else if (err.code === '3D000') {
-            console.error("   → La base de datos especificada no existe");
+            console.error("  → Specified database does not exist");
         }
 
-        console.error("\n💡 Sugerencias:");
-        console.error("   1. Verifica que DATABASE_URL en .env sea correcta");
-        console.error("   2. Comprueba tu conexión a internet");
-        console.error("   3. Asegúrate de que Neon DB esté activo y accesible");
+        console.error("\nSuggestions:");
+        console.error("  1. Verify DATABASE_URL in .env is correct");
+        console.error("  2. Check your internet connection");
+        console.error("  3. Ensure the Neon DB instance is running and accessible");
 
         return false;
     }
 }
 
-// Manejo de errores del pool
+// Pool error handling
 pool.on('error', (err, client) => {
-    console.error('❌ Error inesperado en el pool de conexiones:', err);
+    console.error('Unexpected error in the connection pool:', err);
 });
 
 app.get("/", (req, res) => {
-    res.send("Hola, el meu backend amb Express!");
+    res.send("Hello, this is the Express backend.");
 });
 
 // Health check endpoint
@@ -108,11 +108,11 @@ const isAuth = (req) => !!req.headers["authorization"];
 // POST /api/incidents - Create incident
 app.post("/api/incidents", async (req, res) => {
     try {
-        if (!isAuth(req)) return res.status(401).json({ error: "No autorizado" });
+        if (!isAuth(req)) return res.status(401).json({ error: "Unauthorized" });
 
         const { title, description, location, reporter, status } = req.body;
         if (!title || !description || !location || !reporter) {
-            return res.status(400).json({ error: "Faltan campos obligatorios" });
+            return res.status(400).json({ error: "Missing required fields" });
         }
 
         const q = `INSERT INTO incidents (title, description, location, reporter, status, created_at, updated_at)
@@ -122,7 +122,7 @@ app.post("/api/incidents", async (req, res) => {
         return res.status(201).json(rows[0]);
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: "Error interno del servidor" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
@@ -147,9 +147,9 @@ app.get("/api/incidents", async (req, res) => {
 
         const q = `SELECT *, COUNT(*) OVER() AS total
                    FROM incidents
-                   ${where}
+                            ${where}
                    ORDER BY created_at DESC
-                   LIMIT $${idx++} OFFSET $${idx++}`;
+                       LIMIT $${idx++} OFFSET $${idx++}`;
         params.push(l, offset);
 
         const { rows } = await pool.query(q, params);
@@ -171,7 +171,7 @@ app.get("/api/incidents", async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: "Error interno del servidor" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
@@ -180,7 +180,7 @@ app.get("/api/incidents/:id", async (req, res) => {
     try {
         const id = parseInt(req.params.id, 10);
         const { rows } = await pool.query("SELECT * FROM incidents WHERE id = $1", [id]);
-        if (!rows[0]) return res.status(404).json({ error: "Incidencia no encontrada" });
+        if (!rows[0]) return res.status(404).json({ error: "Incident not found" });
         const r = rows[0];
         return res.status(200).json({
             id: r.id,
@@ -194,21 +194,21 @@ app.get("/api/incidents/:id", async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: "Error interno del servidor" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
-// PUT /api/incidents/:id - Update status (o campos permitidos)
+// PUT /api/incidents/:id - Update fields
 app.put("/api/incidents/:id", async (req, res) => {
     try {
-        if (!isAuth(req)) return res.status(401).json({ error: "No autorizado" });
+        if (!isAuth(req)) return res.status(401).json({ error: "Unauthorized" });
 
         const id = parseInt(req.params.id, 10);
         const allowedStatuses = ["open", "in_progress", "closed"];
         const { status, title, description, location } = req.body;
 
         if (status && !allowedStatuses.includes(status)) {
-            return res.status(400).json({ error: "Estado no válido" });
+            return res.status(400).json({ error: "Invalid status" });
         }
 
         const fields = [];
@@ -218,14 +218,14 @@ app.put("/api/incidents/:id", async (req, res) => {
         if (title) { fields.push(`title = $${idx++}`); params.push(title); }
         if (description) { fields.push(`description = $${idx++}`); params.push(description); }
         if (location) { fields.push(`location = $${idx++}`); params.push(location); }
-        if (!fields.length) return res.status(400).json({ error: "No hay campos para actualizar" });
+        if (!fields.length) return res.status(400).json({ error: "No fields to update" });
 
         fields.push(`updated_at = now()`);
         const q = `UPDATE incidents SET ${fields.join(", ")} WHERE id = $${idx} RETURNING *`;
         params.push(id);
 
         const { rows } = await pool.query(q, params);
-        if (!rows[0]) return res.status(404).json({ error: "Incidencia no encontrada" });
+        if (!rows[0]) return res.status(404).json({ error: "Incident not found" });
 
         const r = rows[0];
         return res.status(200).json({
@@ -240,34 +240,35 @@ app.put("/api/incidents/:id", async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: "Error interno del servidor" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
-// DELETE /api/incidents/:id - Remove (admin)
+// DELETE /api/incidents/:id - Remove (admin only)
 app.delete("/api/incidents/:id", async (req, res) => {
     try {
         if (!isAuth(req) || !isAdmin(req)) {
-            return res.status(401).json({ error: "No autorizado (se requiere admin)" });
+            return res.status(401).json({ error: "Unauthorized (admin required)" });
         }
 
         const id = parseInt(req.params.id, 10);
         const { rows } = await pool.query("DELETE FROM incidents WHERE id = $1 RETURNING *", [id]);
-        if (!rows[0]) return res.status(404).json({ error: "Incidencia no encontrada" });
+        if (!rows[0]) return res.status(404).json({ error: "Incident not found" });
 
         const r = rows[0];
-        return res.status(200).json({ message: "Incidencia eliminada", incident: {
+        return res.status(200).json({ message: "Incident deleted", incident: {
                 id: r.id, title: r.title, description: r.description, location: r.location, reporter: r.reporter, status: r.status
             }});
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: "Error interno del servidor" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
 const PORT = process.env.PORT || 5000;
-const HOST = '0.0.0.0'; // 👈 Importante: permite conexiones de cualquier IP
+const HOST = '0.0.0.0';
 
+// Return local network IPv4 address or localhost
 function getLocalIP() {
     const os = require('os');
     const interfaces = os.networkInterfaces();
@@ -281,21 +282,20 @@ function getLocalIP() {
     return 'localhost';
 }
 
-// Iniciar servidor solo si la conexión a BD es exitosa
+// Start server only if DB connection is successful
 async function startServer() {
     const dbConnected = await testDatabaseConnection();
 
     if (!dbConnected) {
-        console.error("\n❌ No se pudo iniciar el servidor debido a problemas de conexión con la base de datos");
+        console.error("Server will not start due to database connection issues");
         process.exit(1);
     }
 
-    app.listen(PORT, HOST, () => {  // 👈 Añade HOST aquí
-        console.log(`\n🚀 Servidor ejecutándose en el puerto ${PORT}`);
-        console.log(`📍 Local: http://localhost:${PORT}`);
-        console.log(`📱 Red: http://${getLocalIP()}:${PORT}`);  // 👈 Nueva línea
-        console.log(`🏥 Health check: http://localhost:${PORT}/health`);
-        console.log(`\n💡 Usa http://${getLocalIP()}:${PORT} en tu dispositivo móvil`);
+    app.listen(PORT, HOST, () => {
+        console.log(`Server running on port ${PORT}`);
+        console.log(`Local: http://localhost:${PORT}`);
+        console.log(`Network: http://${getLocalIP()}:${PORT}`);
+        console.log(`Health check: http://localhost:${PORT}/health`);
     });
 }
 
