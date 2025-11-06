@@ -266,6 +266,20 @@ app.delete("/api/incidents/:id", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
+const HOST = '0.0.0.0'; // 👈 Importante: permite conexiones de cualquier IP
+
+function getLocalIP() {
+    const os = require('os');
+    const interfaces = os.networkInterfaces();
+    for (const name of Object.keys(interfaces)) {
+        for (const iface of interfaces[name]) {
+            if (iface.family === 'IPv4' && !iface.internal) {
+                return iface.address;
+            }
+        }
+    }
+    return 'localhost';
+}
 
 // Iniciar servidor solo si la conexión a BD es exitosa
 async function startServer() {
@@ -276,10 +290,12 @@ async function startServer() {
         process.exit(1);
     }
 
-    app.listen(PORT, () => {
+    app.listen(PORT, HOST, () => {  // 👈 Añade HOST aquí
         console.log(`\n🚀 Servidor ejecutándose en el puerto ${PORT}`);
-        console.log(`📍 http://localhost:${PORT}`);
+        console.log(`📍 Local: http://localhost:${PORT}`);
+        console.log(`📱 Red: http://${getLocalIP()}:${PORT}`);  // 👈 Nueva línea
         console.log(`🏥 Health check: http://localhost:${PORT}/health`);
+        console.log(`\n💡 Usa http://${getLocalIP()}:${PORT} en tu dispositivo móvil`);
     });
 }
 

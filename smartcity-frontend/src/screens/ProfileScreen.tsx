@@ -8,11 +8,9 @@ import {
     Divider,
     useTheme,
 } from 'react-native-paper';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function ProfileScreen() {
     const theme = useTheme();
-    const [isDarkMode, setIsDarkMode] = useState(false);
 
     return (
         <ScrollView
@@ -46,18 +44,6 @@ export default function ProfileScreen() {
             </View>
 
             <View style={styles.optionsSection}>
-                <List.Item
-                    title="Dark mode"
-                    left={(props) => <List.Icon {...props} icon="theme-light-dark" />}
-                    right={() => (
-                        <Switch
-                            value={isDarkMode}
-                            onValueChange={setIsDarkMode}
-                            color={theme.colors.primary}
-                        />
-                    )}
-                    style={styles.listItem}
-                />
                 <Divider />
                 <List.Item
                     title="Profile details"
