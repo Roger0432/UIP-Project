@@ -7,9 +7,10 @@ import {
     useTheme,
     ActivityIndicator,
     Searchbar,
-    FAB,
+    Button,
 } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { incidentsAPI } from '../services/api';
 import { Incident } from '../types';
 
@@ -19,6 +20,25 @@ export default function ReportsScreen({ navigation }: any) {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isWorker, setIsWorker] = useState(false);
+
+    // Cargar si el usuario es trabajador (al enfocar la pantalla)
+    useEffect(() => {
+        const loadWorkerFlag = async () => {
+            const w = await AsyncStorage.getItem('user_is_worker');
+            setIsWorker(w === 'true');
+        };
+
+        // Se ejecuta cada vez que la pantalla recibe foco
+        const unsubscribe = navigation.addListener('focus', () => {
+            loadWorkerFlag();
+        });
+
+        // También lo llamamos una vez al montar, por si ya está enfocada
+        loadWorkerFlag();
+
+        return unsubscribe;
+    }, [navigation]);
 
     const fetchIncidents = async () => {
         try {
@@ -42,14 +62,23 @@ export default function ReportsScreen({ navigation }: any) {
         fetchIncidents();
     };
 
+    const updateStatus = async (id: number, newStatus: string) => {
+        try {
+            await incidentsAPI.update(id, { status: newStatus });
+            fetchIncidents(); // refrescar lista
+        } catch (error) {
+            console.error('Error updating status:', error);
+        }
+    };
+
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'open':
-                return '#E57373'; // Red
+                return '#E57373';
             case 'in_progress':
-                return '#FFB74D'; // Orange
+                return '#FFB74D';
             case 'closed':
-                return '#81C784'; // Green
+                return '#81C784';
             default:
                 return theme.colors.primary;
         }
@@ -114,6 +143,28 @@ export default function ReportsScreen({ navigation }: any) {
                         {getStatusLabel(item.status)}
                     </Chip>
                 </View>
+
+                {isWorker && (
+                    <View style={{ marginTop: 12 }}>
+                        <Button
+                            mode="contained"
+                            onPress={() => updateStatus(item.id, 'in_progress')}
+                            style={{ marginBottom: 6 }}
+                        >
+                            Mark In Progress
+                        </Button>
+                        <Button
+                            mode="contained"
+                            onPress={() => updateStatus(item.id, 'closed')}
+                            style={{ marginBottom: 6 }}
+                        >
+                            Mark Closed
+                        </Button>
+                        <Button mode="outlined" onPress={() => updateStatus(item.id, 'open')}>
+                            Re-open
+                        </Button>
+                    </View>
+                )}
             </Card.Content>
         </Card>
     );
@@ -130,8 +181,9 @@ export default function ReportsScreen({ navigation }: any) {
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
             <View style={styles.header}>
                 <Text variant="headlineMedium" style={styles.headerTitle}>
-                    Your reports
+                    {isWorker ? 'All reports' : 'Your reports'}
                 </Text>
+
                 <Searchbar
                     placeholder="Search reports..."
                     onChangeText={setSearchQuery}
@@ -155,7 +207,7 @@ export default function ReportsScreen({ navigation }: any) {
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
                         <Text variant="bodyLarge" style={{ color: theme.colors.onSurfaceVariant }}>
-                            There are no more reports.
+                            No reports found.
                         </Text>
                     </View>
                 }

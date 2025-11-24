@@ -6,10 +6,17 @@ import {
     Avatar,
     Divider,
     useTheme,
+    Switch,
 } from 'react-native-paper';
+import { useUser } from '../context/UserContext';
 
 export default function ProfileScreen() {
     const theme = useTheme();
+    const { isWorker, setIsWorker } = useUser();
+
+    const toggleWorkerStatus = () => {
+        setIsWorker(!isWorker); // esto actualiza contexto + AsyncStorage
+    };
 
     return (
         <ScrollView
@@ -44,22 +51,20 @@ export default function ProfileScreen() {
 
             <View style={styles.optionsSection}>
                 <Divider />
+
+                {/* Ajustes */}
                 <List.Item
-                    title="Profile details"
-                    left={(props) => <List.Icon {...props} icon="account-details" />}
-                    right={(props) => <List.Icon {...props} icon="chevron-right" />}
-                    onPress={() => {}}
+                    title="Worker mode"
+                    description="Enable if you are a city worker"
+                    left={(props) => <List.Icon {...props} icon="account-hard-hat" />}
+                    right={() => (
+                        <Switch value={isWorker} onValueChange={toggleWorkerStatus} />
+                    )}
                     style={styles.listItem}
                 />
+
                 <Divider />
-                <List.Item
-                    title="Settings"
-                    left={(props) => <List.Icon {...props} icon="cog" />}
-                    right={(props) => <List.Icon {...props} icon="chevron-right" />}
-                    onPress={() => {}}
-                    style={styles.listItem}
-                />
-                <Divider />
+
                 <List.Item
                     title="Logout"
                     left={(props) => <List.Icon {...props} icon="logout" />}
@@ -67,6 +72,8 @@ export default function ProfileScreen() {
                     onPress={() => {}}
                     style={styles.listItem}
                 />
+
+                <Divider />
             </View>
         </ScrollView>
     );

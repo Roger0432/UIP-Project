@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import AppNavigator from './src/navigation/AppNavigator';
 import { useColorScheme } from 'react-native';
+import { UserProvider } from './src/context/UserContext'; // <-- importa el provider
 
 const theme = {
     ...MD3LightTheme,
@@ -39,10 +40,12 @@ export default function App() {
 
     return (
         <PaperProvider theme={isDark ? darkTheme : theme}>
-            <NavigationContainer>
-                <StatusBar style={isDark ? 'light' : 'dark'} />
-                <AppNavigator />
-            </NavigationContainer>
+            <UserProvider>
+                <NavigationContainer>
+                    <StatusBar style={isDark ? 'light' : 'dark'} />
+                    <AppNavigator />
+                </NavigationContainer>
+            </UserProvider>
         </PaperProvider>
     );
 }

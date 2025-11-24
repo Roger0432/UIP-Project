@@ -1,3 +1,4 @@
+// AppNavigator.tsx
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -6,11 +7,13 @@ import { useTheme } from 'react-native-paper';
 import ReportsScreen from '../screens/ReportsScreen';
 import CreateReportScreen from '../screens/CreateReportScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import { useUser } from '../context/UserContext';
 
 const Tab = createBottomTabNavigator();
 
 export default function AppNavigator() {
     const theme = useTheme();
+    const { isWorker } = useUser();
 
     return (
         <Tab.Navigator
@@ -35,21 +38,33 @@ export default function AppNavigator() {
                     title: 'Reports',
                     tabBarLabel: 'Reports',
                     tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="file-document-multiple" size={size} color={color} />
+                        <MaterialCommunityIcons
+                            name="file-document-multiple"
+                            size={size}
+                            color={color}
+                        />
                     ),
                 }}
             />
-            <Tab.Screen
-                name="Create"
-                component={CreateReportScreen}
-                options={{
-                    title: 'Create',
-                    tabBarLabel: 'Create',
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="plus-circle" size={size} color={color} />
-                    ),
-                }}
-            />
+
+            {!isWorker && (
+                <Tab.Screen
+                    name="Create"
+                    component={CreateReportScreen}
+                    options={{
+                        title: 'Create',
+                        tabBarLabel: 'Create',
+                        tabBarIcon: ({ color, size }) => (
+                            <MaterialCommunityIcons
+                                name="plus-circle"
+                                size={size}
+                                color={color}
+                            />
+                        ),
+                    }}
+                />
+            )}
+
             <Tab.Screen
                 name="Profile"
                 component={ProfileScreen}
