@@ -25,7 +25,7 @@ export default function CreateReportScreen({ navigation }: any) {
         title: '',
         description: '',
         location: '',
-        reporter: 'Joel Garcia', // Este valor vendría del usuario autenticado
+        reporter: 'Joel Garcia',
         phone: '+34 612 123 123',
         email: 'joelgarcia@gmail.com',
     });
@@ -72,6 +72,36 @@ export default function CreateReportScreen({ navigation }: any) {
         }
     };
 
+    // Función para subir foto a Cloudinary con preset no firmado
+    const uploadPhotoAsync = async (uri: string): Promise<string> => {
+        const cloudName = 'dt2bsrv1r';
+        const uploadPreset = 'UIDProject';
+
+        const formData = new FormData();
+        formData.append('file', {
+            uri,
+            name: 'photo.jpg',
+            type: 'image/jpeg',
+        } as any); // Casting necesario en TypeScript para FormData con archivos
+        formData.append('upload_preset', uploadPreset);
+
+        const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
+            {
+                method: 'POST',
+                body: formData,
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error?.message || 'Upload failed');
+        }
+
+        return data.secure_url;
+    };
+
     const handleSubmit = async () => {
         if (!formData.title || !formData.description || !formData.location) {
             Alert.alert('Error', 'Please fill in all required fields');
@@ -80,19 +110,30 @@ export default function CreateReportScreen({ navigation }: any) {
 
         try {
             setLoading(true);
+
+            // Subir todas las fotos y obtener URLs públicas
+            const uploadedPhotoUrls: string[] = [];
+            for (const photoUri of photos) {
+                const url = await uploadPhotoAsync(photoUri);
+                uploadedPhotoUrls.push(url);
+            }
+
+            // Crear el reporte con las URLs de las fotos
             await incidentsAPI.create({
                 title: formData.title,
                 description: formData.description,
                 location: formData.location,
                 reporter: formData.reporter,
+                phone: formData.phone,
+                email: formData.email,
                 status: 'open',
+                photos: uploadedPhotoUrls,
             });
 
             Alert.alert('Success', 'Report created successfully!', [
                 {
                     text: 'OK',
                     onPress: () => {
-                        // Reset form
                         setFormData({
                             ...formData,
                             title: '',
