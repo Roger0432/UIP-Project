@@ -265,6 +265,154 @@ app.delete("/api/incidents/:id", async (req, res) => {
     }
 });
 
+// GET /api/profile/:userId - Get user profile
+app.get("/api/profile/:userId", async (req, res) => {
+    try {
+        if (!isAuth(req)) return res.status(401).json({ error: "Unauthorized" });
+
+        const userId = req.params.userId;
+        
+        // First, check if users table exists, if not create it
+        const tableCheck = await pool.query(`
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables
+                WHERE table_name = 'users'
+            );
+        `);
+
+        if (!tableCheck.rows[0].exists) {
+            // Create users table if it doesn't exist
+            await pool.query(`
+                CREATE TABLE users (
+                    id VARCHAR(255) PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    email VARCHAR(255) UNIQUE NOT NULL,
+                    phone VARCHAR(50),
+                    role VARCHAR(50) DEFAULT 'citizen',
+                    created_at TIMESTAMP DEFAULT NOW(),
+                    updated_at TIMESTAMP DEFAULT NOW()
+                );
+            `);
+            console.log("Created 'users' table");
+        }
+
+        // Try to get user profile
+        const { rows } = await pool.query(
+            "SELECT id, name, email, phone, role, created_at, updated_at FROM users WHERE id = $1",
+            [userId]
+        );
+
+        if (!rows[0]) {
+            // If user doesn't exist, return a default profile structure
+            return res.status(404).json({ 
+                error: "User not found",
+                message: "Please update your profile to create it"
+            });
+        }
+
+        const user = rows[0];
+        return res.status(200).json({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            role: user.role,
+            createdAt: user.created_at,
+            updatedAt: user.updated_at
+        });
+    } catch (err) {
+        console.error("Error getting profile:", err);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// PUT /api/profile/:userId - Update user profile
+app.put("/api/profile/:userId", async (req, res) => {
+    try {
+        if (!isAuth(req)) return res.status(401).json({ error: "Unauthorized" });
+
+        const userId = req.params.userId;
+        const { name, email, phone, role } = req.body;
+
+        // Validate at least one field is provided
+        if (!name && !email && !phone && !role) {
+            return res.status(400).json({ error: "No fields to update" });
+        }
+
+        // Check if user exists
+        const checkUser = await pool.query("SELECT * FROM users WHERE id = $1", [userId]);
+
+        if (!checkUser.rows[0]) {
+            // Create new user if doesn't exist
+            const insertQuery = `
+                INSERT INTO users (id, name, email, phone, role, created_at, updated_at)
+                VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+                RETURNING id, name, email, phone, role, created_at, updated_at
+            `;
+            const { rows } = await pool.query(insertQuery, [
+                userId,
+                name || 'User',
+                email || `${userId}@example.com`,
+                phone || '',
+                role || 'citizen'
+            ]);
+
+            const user = rows[0];
+            return res.status(201).json({
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                role: user.role,
+                createdAt: user.created_at,
+                updatedAt: user.updated_at
+            });
+        }
+
+        // Update existing user
+        const fields = [];
+        const params = [];
+        let idx = 1;
+
+        if (name) { fields.push(`name = $${idx++}`); params.push(name); }
+        if (email) { fields.push(`email = $${idx++}`); params.push(email); }
+        if (phone !== undefined) { fields.push(`phone = $${idx++}`); params.push(phone); }
+        if (role) { fields.push(`role = $${idx++}`); params.push(role); }
+
+        fields.push(`updated_at = NOW()`);
+        params.push(userId);
+
+        const updateQuery = `
+            UPDATE users 
+            SET ${fields.join(", ")} 
+            WHERE id = $${idx}
+            RETURNING id, name, email, phone, role, created_at, updated_at
+        `;
+
+        const { rows } = await pool.query(updateQuery, params);
+        const user = rows[0];
+
+        return res.status(200).json({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            role: user.role,
+            createdAt: user.created_at,
+            updatedAt: user.updated_at
+        });
+    } catch (err) {
+        console.error("Error updating profile:", err);
+        
+        // Handle unique constraint violation for email
+        if (err.code === '23505') {
+            return res.status(400).json({ error: "Email already in use" });
+        }
+        
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 const PORT = process.env.PORT || 5000;
 const HOST = '0.0.0.0';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import {
     Text,
     List,
@@ -15,17 +15,21 @@ import {
 } from 'react-native-paper';
 import { useUser } from '../context/UserContext';
 import { useAppTheme } from '../context/ThemeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { profilesAPI } from '../services/api';
 
 export default function ProfileScreen() {
     const theme = useTheme();
     const { isWorker, setIsWorker } = useUser();
     const { isDark, setThemeMode } = useAppTheme();
 
-    const [profile, setProfile] = React.useState({
-        name: 'Joel Garcia',
-        phone: '+34 612 123 123',
-        email: 'joelgarcia@gmail.com',
+    const [profile, setProfile] = React.useState<{ name: string; phone: string; email: string }>({
+        name: '',
+        phone: '',
+        email: '',
     });
+    const [loading, setLoading] = React.useState<boolean>(true);
+    const [userId, setUserId] = React.useState<string | null>(null);
     const [editVisible, setEditVisible] = React.useState(false);
     const [tempProfile, setTempProfile] = React.useState(profile);
 
@@ -34,14 +38,71 @@ export default function ProfileScreen() {
         setEditVisible(true);
     };
 
-    const saveEdit = () => {
-        setProfile(tempProfile);
-        setEditVisible(false);
+    const saveEdit = async () => {
+        try {
+            if (!userId) return;
+            const payload = { name: tempProfile.name, phone: tempProfile.phone, email: tempProfile.email };
+            setLoading(true);
+            const saved = await profilesAPI.updateProfile(userId, payload);
+            setProfile({ name: saved.name ?? '', phone: saved.phone ?? '', email: saved.email ?? '' });
+            setEditVisible(false);
+        } catch (err) {
+            console.error('Error saving profile', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const toggleWorkerStatus = () => {
-        setIsWorker(!isWorker);
+    const toggleWorkerStatus = async () => {
+        const newVal = !isWorker;
+        setIsWorker(newVal);
+        try {
+            if (!userId) return;
+            setLoading(true);
+            await profilesAPI.updateProfile(userId, { role: newVal ? 'worker' : 'citizen' });
+        } catch (err) {
+            console.error('Error updating role', err);
+        } finally {
+            setLoading(false);
+        }
     };
+
+    React.useEffect(() => {
+        // Ensure we have a userId stored, otherwise create one
+        const init = async () => {
+            try {
+                let id = await AsyncStorage.getItem('app_user_id');
+                if (!id) {
+                    // Create a simple ID - for production use UUID
+                    id = `user-${Date.now()}`;
+                    await AsyncStorage.setItem('app_user_id', id);
+                }
+                setUserId(id);
+
+                // Fetch profile from backend
+                try {
+                    setLoading(true);
+                    const data = await profilesAPI.getProfile(id);
+                    setProfile({ name: data.name || '', phone: data.phone || '', email: data.email || '' });
+                    // Sync worker role with UserContext
+                    if (data.role) setIsWorker(data.role === 'worker');
+                } catch (fetchErr: any) {
+                    // If 404 user not found, keep empty profile so user can create
+                    if (fetchErr?.response?.status === 404) {
+                        setProfile({ name: '', phone: '', email: '' });
+                    } else {
+                        console.error('Fetch profile error', fetchErr);
+                    }
+                }
+            } catch (err) {
+                console.error('Error initializing profile', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        init();
+    }, []);
 
     return (
         <>
@@ -49,6 +110,11 @@ export default function ProfileScreen() {
                 style={[styles.container, { backgroundColor: theme.colors.background }]}
                 contentContainerStyle={styles.content}
             >
+                {loading && (
+                    <View style={{ alignItems: 'center', paddingTop: 20 }}>
+                        <ActivityIndicator size="large" color={theme.colors.primary} />
+                    </View>
+                )}
                 {/* Header */}
                 <View style={styles.profileHeader}>
                     <View style={styles.avatarContainer}>
@@ -65,7 +131,7 @@ export default function ProfileScreen() {
                         />
                     </View>
                     <Text variant="headlineSmall" style={styles.profileName}>
-                        {profile.name}
+                        {profile.name || 'Unnamed user'}
                     </Text>
                 </View>
 

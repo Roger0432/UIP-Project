@@ -17,7 +17,9 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { incidentsAPI } from '../services/api';
+import { incidentsAPI, profilesAPI } from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator } from 'react-native';
 
 export default function CreateReportScreen({ navigation }: any) {
     const theme = useTheme();
@@ -25,10 +27,12 @@ export default function CreateReportScreen({ navigation }: any) {
         title: '',
         description: '',
         location: '',
-        reporter: 'Joel Garcia',
-        phone: '+34 612 123 123',
-        email: 'joelgarcia@gmail.com',
+        reporter: '',
+        phone: '',
+        email: '',
     });
+    const [userId, setUserId] = useState<string | null>(null);
+    const [profileLoading, setProfileLoading] = useState<boolean>(true);
     const [photos, setPhotos] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -116,6 +120,19 @@ export default function CreateReportScreen({ navigation }: any) {
                 uploadedPhotoUrls.push(url);
             }
 
+            // Persist the profile if we have a userId - this will create or update the user record
+            if (userId) {
+                try {
+                    await profilesAPI.updateProfile(userId, {
+                        name: formData.reporter,
+                        phone: formData.phone,
+                        email: formData.email,
+                    });
+                } catch (err) {
+                    console.warn('Warning: failed to persist profile when creating report', err);
+                }
+            }
+
             await incidentsAPI.create({
                 title: formData.title,
                 description: formData.description,
@@ -150,6 +167,37 @@ export default function CreateReportScreen({ navigation }: any) {
         }
     };
 
+    React.useEffect(() => {
+        const init = async () => {
+            try {
+                let id = await AsyncStorage.getItem('app_user_id');
+                if (!id) {
+                    id = `user-${Date.now()}`;
+                    await AsyncStorage.setItem('app_user_id', id);
+                }
+                setUserId(id);
+
+                try {
+                    setProfileLoading(true);
+                    const data = await profilesAPI.getProfile(id);
+                    setFormData((prev) => ({ ...prev, reporter: data.name || '', phone: data.phone || '', email: data.email || '' }));
+                } catch (err: any) {
+                    if (err?.response?.status === 404) {
+                        // user not found – keep defaults blank so user can fill them
+                    } else {
+                        console.error('Error fetching profile for report:', err);
+                    }
+                }
+            } catch (err) {
+                console.error('CreateReport init error', err);
+            } finally {
+                setProfileLoading(false);
+            }
+        };
+
+        init();
+    }, []);
+
     return (
         <ScrollView
             style={[styles.container, { backgroundColor: theme.colors.background }]}
@@ -158,6 +206,10 @@ export default function CreateReportScreen({ navigation }: any) {
             <Text variant="headlineMedium" style={styles.title}>
                 Create a new report
             </Text>
+
+            {profileLoading && (
+                <ActivityIndicator size="small" color={theme.colors.primary} style={{ marginBottom: 12 }} />
+            )}
 
             <View style={styles.row}>
                 <TextInput
