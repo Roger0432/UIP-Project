@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { Incident, CreateIncidentData } from '../types';
 
-const API_BASE_URL = 'http://10.0.17.125:5000';
-//const API_BASE_URL = 'http://10.0.17.180:5000';
+const API_BASE_URL = 'http://172.20.10.8:5000';
 
 console.log('🌐 API conectando a:', API_BASE_URL);
 
