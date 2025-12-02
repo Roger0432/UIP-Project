@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import AppNavigator from './src/navigation/AppNavigator';
 import { UserProvider } from './src/context/UserContext';
 import { ThemeProvider, useAppTheme } from './src/context/ThemeContext';
+import RootNavigator from './src/navigation/RootNavigator';
 
 function Main() {
     const { theme, isDark } = useAppTheme();
@@ -14,7 +15,7 @@ function Main() {
             <UserProvider>
                 <NavigationContainer>
                     <StatusBar style={isDark ? 'light' : 'dark'} />
-                    <AppNavigator />
+                    <RootNavigator />
                 </NavigationContainer>
             </UserProvider>
         </PaperProvider>

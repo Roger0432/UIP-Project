@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet, RefreshControl, Image } from 'react-native';
+import { View, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import {
-    Card,
     Text,
-    Chip,
     useTheme,
     ActivityIndicator,
     Searchbar,
-    Button,
 } from 'react-native-paper';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { incidentsAPI } from '../services/api';
 import { Incident } from '../types';
+import ReportCard from '../components/ReportCard';
 
 export default function ReportsScreen({ navigation }: any) {
     const theme = useTheme();
@@ -67,103 +64,9 @@ export default function ReportsScreen({ navigation }: any) {
         }
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'open':
-                return '#E57373';
-            case 'in_progress':
-                return '#FFB74D';
-            case 'closed':
-                return '#81C784';
-            default:
-                return theme.colors.primary;
-        }
+    const handleOpenDetail = (item: Incident) => {
+        navigation.navigate('ReportDetail', { incident: item });
     };
-
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'open':
-                return 'alert-circle';
-            case 'in_progress':
-                return 'progress-clock';
-            case 'closed':
-                return 'check-circle';
-            default:
-                return 'information';
-        }
-    };
-
-    const getStatusLabel = (status: string) => {
-        switch (status) {
-            case 'open':
-                return 'Open';
-            case 'in_progress':
-                return 'In Progress';
-            case 'closed':
-                return 'Accepted';
-            default:
-                return status;
-        }
-    };
-
-    const renderIncidentCard = ({ item }: { item: Incident }) => (
-        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]} mode="elevated">
-            <Card.Content>
-                <Text variant="titleMedium" style={styles.cardTitle}>
-                    {item.title}
-                </Text>
-
-                {item.photos && item.photos.length > 0 && (
-                    <Image
-                        source={{ uri: item.photos[0] }}
-                        style={styles.cardImage}
-                        resizeMode="cover"
-                    />
-                )}
-
-                <View style={styles.statusContainer}>
-                    <Chip
-                        icon={() => (
-                            <MaterialCommunityIcons
-                                name={getStatusIcon(item.status)}
-                                size={16}
-                                color={getStatusColor(item.status)}
-                            />
-                        )}
-                        style={[
-                            styles.statusChip,
-                            { backgroundColor: `${getStatusColor(item.status)}20` },
-                        ]}
-                        textStyle={{ color: getStatusColor(item.status), fontSize: 12 }}
-                    >
-                        {getStatusLabel(item.status)}
-                    </Chip>
-                </View>
-
-                {isWorker && (
-                    <View style={{ marginTop: 12 }}>
-                        <Button
-                            mode="contained"
-                            onPress={() => updateStatus(item.id, 'in_progress')}
-                            style={{ marginBottom: 6 }}
-                        >
-                            Mark In Progress
-                        </Button>
-                        <Button
-                            mode="contained"
-                            onPress={() => updateStatus(item.id, 'closed')}
-                            style={{ marginBottom: 6 }}
-                        >
-                            Mark Closed
-                        </Button>
-                        <Button mode="outlined" onPress={() => updateStatus(item.id, 'open')}>
-                            Re-open
-                        </Button>
-                    </View>
-                )}
-            </Card.Content>
-        </Card>
-    );
 
     if (loading) {
         return (
@@ -190,7 +93,14 @@ export default function ReportsScreen({ navigation }: any) {
 
             <FlatList
                 data={incidents}
-                renderItem={renderIncidentCard}
+                renderItem={({ item }) => (
+                    <ReportCard
+                        incident={item}
+                        isWorker={isWorker}
+                        onPress={() => handleOpenDetail(item)}
+                        onChangeStatus={updateStatus}
+                    />
+                )}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={styles.list}
                 refreshControl={
@@ -202,7 +112,10 @@ export default function ReportsScreen({ navigation }: any) {
                 }
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
-                        <Text variant="bodyLarge" style={{ color: theme.colors.onSurfaceVariant }}>
+                        <Text
+                            variant="bodyLarge"
+                            style={{ color: theme.colors.onSurfaceVariant }}
+                        >
                             No reports found.
                         </Text>
                     </View>
@@ -234,27 +147,6 @@ const styles = StyleSheet.create({
     list: {
         padding: 16,
         paddingTop: 8,
-    },
-    card: {
-        marginBottom: 16,
-        borderRadius: 12,
-    },
-    cardTitle: {
-        fontWeight: '600',
-        marginBottom: 12,
-    },
-    cardImage: {
-        width: '100%',
-        height: 150,
-        borderRadius: 8,
-        marginBottom: 12,
-    },
-    statusContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    statusChip: {
-        height: 28,
     },
     emptyContainer: {
         alignItems: 'center',
