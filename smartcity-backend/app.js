@@ -110,14 +110,26 @@ app.post("/api/incidents", async (req, res) => {
     try {
         if (!isAuth(req)) return res.status(401).json({ error: "Unauthorized" });
 
-        const { title, description, location, reporter, status } = req.body;
+        const { title, description, location, reporter, status, photos } = req.body;
         if (!title || !description || !location || !reporter) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
-        const q = `INSERT INTO incidents (title, description, location, reporter, status, created_at, updated_at)
-                   VALUES ($1,$2,$3,$4,$5, now(), now()) RETURNING *`;
-        const values = [title, description, location, reporter, status || "open"];
+        const photosArray = Array.isArray(photos) ? photos : [];
+
+        const q = `INSERT INTO incidents
+                 (title, description, location, reporter, status, photos, created_at, updated_at)
+               VALUES ($1,$2,$3,$4,$5,$6, now(), now())
+               RETURNING *`;
+        const values = [
+            title,
+            description,
+            location,
+            reporter,
+            status || "open",
+            JSON.stringify(photosArray),
+        ];
+
         const { rows } = await pool.query(q, values);
         return res.status(201).json(rows[0]);
     } catch (err) {
@@ -125,6 +137,7 @@ app.post("/api/incidents", async (req, res) => {
         return res.status(500).json({ error: "Internal server error" });
     }
 });
+
 
 // GET /api/incidents - Retrieve with filters
 app.get("/api/incidents", async (req, res) => {
@@ -164,8 +177,9 @@ app.get("/api/incidents", async (req, res) => {
                     location: r.location,
                     reporter: r.reporter,
                     status: r.status,
+                    photos: r.photos || [],
                     createdAt: r.created_at,
-                    updatedAt: r.updated_at
+                    updatedAt: r.updated_at,
                 };
             })
         });
@@ -189,8 +203,9 @@ app.get("/api/incidents/:id", async (req, res) => {
             location: r.location,
             reporter: r.reporter,
             status: r.status,
+            photos: r.photos || [],
             createdAt: r.created_at,
-            updatedAt: r.updated_at
+            updatedAt: r.updated_at,
         });
     } catch (err) {
         console.error(err);
@@ -235,8 +250,9 @@ app.put("/api/incidents/:id", async (req, res) => {
             location: r.location,
             reporter: r.reporter,
             status: r.status,
+            photos: r.photos || [],
             createdAt: r.created_at,
-            updatedAt: r.updated_at
+            updatedAt: r.updated_at,
         });
     } catch (err) {
         console.error(err);
