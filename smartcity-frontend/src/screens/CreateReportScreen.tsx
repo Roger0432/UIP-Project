@@ -72,7 +72,6 @@ export default function CreateReportScreen({ navigation }: any) {
         }
     };
 
-    // Función para subir foto a Cloudinary con preset no firmado
     const uploadPhotoAsync = async (uri: string): Promise<string> => {
         const cloudName = 'dt2bsrv1r';
         const uploadPreset = 'UIDProject';
@@ -82,7 +81,7 @@ export default function CreateReportScreen({ navigation }: any) {
             uri,
             name: 'photo.jpg',
             type: 'image/jpeg',
-        } as any); // Casting necesario en TypeScript para FormData con archivos
+        } as any);
         formData.append('upload_preset', uploadPreset);
 
         const response = await fetch(
@@ -111,14 +110,12 @@ export default function CreateReportScreen({ navigation }: any) {
         try {
             setLoading(true);
 
-            // Subir todas las fotos y obtener URLs públicas
             const uploadedPhotoUrls: string[] = [];
             for (const photoUri of photos) {
                 const url = await uploadPhotoAsync(photoUri);
                 uploadedPhotoUrls.push(url);
             }
 
-            // Crear el reporte con las URLs de las fotos
             await incidentsAPI.create({
                 title: formData.title,
                 description: formData.description,

@@ -23,13 +23,13 @@ const lightTheme = {
     ...MD3LightTheme,
     colors: {
         ...MD3LightTheme.colors,
-        primary: '#6B8E7F',
-        primaryContainer: '#C8E6D4',
-        secondary: '#52634F',
-        secondaryContainer: '#D5E8CE',
-        tertiary: '#3A6470',
-        surface: '#F8FAF5',
-        background: '#F8FAF5',
+        primary: '#184B44',
+        primaryContainer: '#95F0E0',
+        secondary: '#184B44',
+        secondaryContainer: '#D1F2EB',
+        tertiary: '#2C5650',
+        surface: '#FFFFFF',
+        background: '#FFFFFF',
     },
 };
 

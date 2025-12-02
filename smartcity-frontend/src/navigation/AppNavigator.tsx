@@ -18,12 +18,12 @@ export default function AppNavigator() {
     return (
         <Tab.Navigator
             screenOptions={{
-                tabBarActiveTintColor: theme.colors.primary,
-                tabBarInactiveTintColor: theme.colors.onSurfaceVariant,
+                tabBarActiveTintColor: '#FFFFFF',
+                tabBarInactiveTintColor: '#A0B5B0',
                 tabBarStyle: {
-                    backgroundColor: theme.colors.surface,
+                    backgroundColor: '#184B44',
                     borderTopWidth: 1,
-                    borderTopColor: theme.colors.outlineVariant,
+                    borderTopColor: '#2A6B5F',
                 },
                 headerStyle: {
                     backgroundColor: theme.colors.surface,

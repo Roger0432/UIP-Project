@@ -22,21 +22,17 @@ export default function ReportsScreen({ navigation }: any) {
     const [searchQuery, setSearchQuery] = useState('');
     const [isWorker, setIsWorker] = useState(false);
 
-    // Cargar si el usuario es trabajador (al enfocar la pantalla)
     useEffect(() => {
         const loadWorkerFlag = async () => {
             const w = await AsyncStorage.getItem('user_is_worker');
             setIsWorker(w === 'true');
         };
 
-        // Se ejecuta cada vez que la pantalla recibe foco
         const unsubscribe = navigation.addListener('focus', () => {
             loadWorkerFlag();
         });
 
-        // También lo llamamos una vez al montar, por si ya está enfocada
         loadWorkerFlag();
-
         return unsubscribe;
     }, [navigation]);
 
@@ -65,7 +61,7 @@ export default function ReportsScreen({ navigation }: any) {
     const updateStatus = async (id: number, newStatus: string) => {
         try {
             await incidentsAPI.update(id, { status: newStatus });
-            fetchIncidents(); // refrescar lista
+            fetchIncidents();
         } catch (error) {
             console.error('Error updating status:', error);
         }
