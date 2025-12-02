@@ -9,10 +9,12 @@ import {
     Switch,
 } from 'react-native-paper';
 import { useUser } from '../context/UserContext';
+import { useAppTheme } from '../context/ThemeContext';
 
 export default function ProfileScreen() {
     const theme = useTheme();
     const { isWorker, setIsWorker } = useUser();
+    const { isDark, setThemeMode } = useAppTheme();
 
     const toggleWorkerStatus = () => {
         setIsWorker(!isWorker); // esto actualiza contexto + AsyncStorage
@@ -23,6 +25,7 @@ export default function ProfileScreen() {
             style={[styles.container, { backgroundColor: theme.colors.background }]}
             contentContainerStyle={styles.content}
         >
+            {/* Header */}
             <View style={styles.profileHeader}>
                 <Avatar.Image
                     size={120}
@@ -33,7 +36,7 @@ export default function ProfileScreen() {
                 </Text>
             </View>
 
-            <View style={styles.infoSection}>
+            <View style={styles.section}>
                 <List.Item
                     title="Phone"
                     description="+34 612 123 123"
@@ -47,12 +50,20 @@ export default function ProfileScreen() {
                     left={(props) => <List.Icon {...props} icon="email" />}
                     style={styles.listItem}
                 />
-            </View>
-
-            <View style={styles.optionsSection}>
                 <Divider />
-
-                {/* Ajustes */}
+                <List.Item
+                    title="Dark Mode"
+                    description="Choose your theme"
+                    left={(props) => <List.Icon {...props} icon="theme-light-dark" />}
+                    right={() => (
+                        <Switch
+                            value={isDark}
+                            onValueChange={(val) => setThemeMode(val ? 'dark' : 'light')}
+                        />
+                    )}
+                    style={styles.listItem}
+                />
+                <Divider />
                 <List.Item
                     title="Worker mode"
                     description="Enable if you are a city worker"
@@ -62,18 +73,14 @@ export default function ProfileScreen() {
                     )}
                     style={styles.listItem}
                 />
-
                 <Divider />
-
                 <List.Item
                     title="Logout"
                     left={(props) => <List.Icon {...props} icon="logout" />}
                     right={(props) => <List.Icon {...props} icon="chevron-right" />}
-                    onPress={() => {}}
+                    onPress={() => { }}
                     style={styles.listItem}
                 />
-
-                <Divider />
             </View>
         </ScrollView>
     );
@@ -95,12 +102,8 @@ const styles = StyleSheet.create({
         marginTop: 16,
         fontWeight: '600',
     },
-    infoSection: {
+    section: {
         marginBottom: 24,
-        borderRadius: 12,
-        overflow: 'hidden',
-    },
-    optionsSection: {
         borderRadius: 12,
         overflow: 'hidden',
     },
