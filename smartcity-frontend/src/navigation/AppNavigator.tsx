@@ -25,10 +25,19 @@ export default function AppNavigator() {
                     borderTopWidth: 1,
                     borderTopColor: '#2A6B5F',
                 },
+                headerBackground: undefined,
                 headerStyle: {
-                    backgroundColor: theme.colors.surface,
+                    backgroundColor: '#184B44',
+                    elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0,
                 },
-                headerTintColor: theme.colors.onSurface,
+                headerTintColor: '#FFFFFF',
+                headerTitleStyle: {
+                    fontWeight: '600',
+                    fontSize: 18,
+                    color: '#FFFFFF',
+                },
             }}
         >
             <Tab.Screen
