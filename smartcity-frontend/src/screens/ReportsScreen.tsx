@@ -27,9 +27,12 @@ export default function ReportsScreen({ navigation }: any) {
 
         const unsubscribe = navigation.addListener('focus', () => {
             loadWorkerFlag();
+            fetchIncidents();
         });
 
         loadWorkerFlag();
+        fetchIncidents();
+
         return unsubscribe;
     }, [navigation]);
 
@@ -46,26 +49,13 @@ export default function ReportsScreen({ navigation }: any) {
         }
     };
 
-    useEffect(() => {
-        fetchIncidents();
-    }, []);
-
     const onRefresh = () => {
         setRefreshing(true);
         fetchIncidents();
     };
 
-    const updateStatus = async (id: number, newStatus: string) => {
-        try {
-            await incidentsAPI.update(id, { status: newStatus });
-            fetchIncidents();
-        } catch (error) {
-            console.error('Error updating status:', error);
-        }
-    };
-
     const handleOpenDetail = (item: Incident) => {
-        navigation.navigate('ReportDetail', { incident: item });
+        navigation.navigate('ReportDetail', { incident: item, isWorker });
     };
 
     if (loading) {
@@ -98,7 +88,8 @@ export default function ReportsScreen({ navigation }: any) {
                         incident={item}
                         isWorker={isWorker}
                         onPress={() => handleOpenDetail(item)}
-                        onChangeStatus={updateStatus}
+                        // ya no cambiamos estado desde la tarjeta
+                        onChangeStatus={undefined}
                     />
                 )}
                 keyExtractor={(item) => item.id.toString()}
@@ -126,30 +117,11 @@ export default function ReportsScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    centered: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    header: {
-        padding: 16,
-    },
-    headerTitle: {
-        marginBottom: 16,
-        fontWeight: '600',
-    },
-    searchBar: {
-        elevation: 2,
-    },
-    list: {
-        padding: 16,
-        paddingTop: 8,
-    },
-    emptyContainer: {
-        alignItems: 'center',
-        marginTop: 32,
-    },
+    container: { flex: 1 },
+    centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    header: { padding: 16 },
+    headerTitle: { marginBottom: 16, fontWeight: '600' },
+    searchBar: { elevation: 2 },
+    list: { padding: 16, paddingTop: 8 },
+    emptyContainer: { alignItems: 'center', marginTop: 32 },
 });

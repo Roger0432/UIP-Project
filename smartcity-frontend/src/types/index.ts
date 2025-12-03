@@ -4,7 +4,11 @@ export interface Incident {
     description: string;
     location: string;
     reporter: string;
-    status: 'open' | 'in_progress' | 'closed';
+    status: 'waiting'
+        | 'accepted'
+        | 'denied'
+        | 'in_progress'
+        | 'finished';
     createdAt: string;
     updatedAt: string;
     photos?: string[];

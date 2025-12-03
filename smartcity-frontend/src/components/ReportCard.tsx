@@ -16,12 +16,16 @@ export default function ReportCard({ incident, isWorker, onPress, onChangeStatus
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'open':
-                return '#E57373';
+            case 'waiting':
+                return '#E57373';          // Waiting to be accepted
             case 'in_progress':
-                return '#FFB74D';
-            case 'closed':
-                return '#81C784';
+                return '#FFB74D';          // In progress
+            case 'accepted':
+                return '#81C784';          // Accepted
+            case 'denied':
+                return '#9E9E9E';          // Denied
+            case 'finished':
+                return '#4CAF50';          // Finished
             default:
                 return theme.colors.primary;
         }
@@ -29,12 +33,16 @@ export default function ReportCard({ incident, isWorker, onPress, onChangeStatus
 
     const getStatusIcon = (status: string) => {
         switch (status) {
-            case 'open':
-                return 'alert-circle';
+            case 'waiting':
+                return 'clock-outline';
             case 'in_progress':
                 return 'progress-clock';
-            case 'closed':
+            case 'accepted':
                 return 'check-circle';
+            case 'denied':
+                return 'close-circle';
+            case 'finished':
+                return 'check-decagram';
             default:
                 return 'information';
         }
@@ -42,12 +50,16 @@ export default function ReportCard({ incident, isWorker, onPress, onChangeStatus
 
     const getStatusLabel = (status: string) => {
         switch (status) {
-            case 'open':
-                return 'Open';
+            case 'waiting':
+                return 'Waiting to be accepted';
             case 'in_progress':
-                return 'In Progress';
-            case 'closed':
+                return 'In progress';
+            case 'accepted':
                 return 'Accepted';
+            case 'denied':
+                return 'Denied';
+            case 'finished':
+                return 'Finished';
             default:
                 return status;
         }
@@ -91,28 +103,10 @@ export default function ReportCard({ incident, isWorker, onPress, onChangeStatus
                     </Chip>
                 </View>
 
-                {isWorker && onChangeStatus && (
+                {/* Opcional: ya no se usa onChangeStatus desde lista */}
+                {isWorker && onChangeStatus && false && (
                     <View style={{ marginTop: 12 }}>
-                        <Button
-                            mode="contained"
-                            onPress={() => onChangeStatus(incident.id, 'in_progress')}
-                            style={{ marginBottom: 6 }}
-                        >
-                            Mark In Progress
-                        </Button>
-                        <Button
-                            mode="contained"
-                            onPress={() => onChangeStatus(incident.id, 'closed')}
-                            style={{ marginBottom: 6 }}
-                        >
-                            Mark Closed
-                        </Button>
-                        <Button
-                            mode="outlined"
-                            onPress={() => onChangeStatus(incident.id, 'open')}
-                        >
-                            Re-open
-                        </Button>
+                        {/* botones desactivados */}
                     </View>
                 )}
             </Card.Content>
