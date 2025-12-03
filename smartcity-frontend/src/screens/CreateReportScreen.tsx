@@ -6,7 +6,6 @@ import {
     Image,
     TouchableOpacity,
     Alert,
-    Platform,
 } from 'react-native';
 import {
     TextInput,
@@ -19,7 +18,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { incidentsAPI, profilesAPI } from '../services/api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUser } from '../context/UserContext';
 import { ActivityIndicator } from 'react-native';
 
 export default function CreateReportScreen({ navigation }: any) {
@@ -33,6 +32,7 @@ export default function CreateReportScreen({ navigation }: any) {
         email: '',
     });
     const [userId, setUserId] = useState<string | null>(null);
+    const { user, setUser, ensureAnonymousUser } = useUser();
     const [profileLoading, setProfileLoading] = useState<boolean>(true);
     const [photos, setPhotos] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
@@ -82,19 +82,11 @@ export default function CreateReportScreen({ navigation }: any) {
         const uploadPreset = 'UIDProject';
 
         const formData = new FormData();
-
-        if (Platform.OS === 'web') {
-            const response = await fetch(uri);
-            const blob = await response.blob();
-            formData.append('file', blob);
-        } else {
-            formData.append('file', {
-                uri,
-                name: 'photo.jpg',
-                type: 'image/jpeg',
-            } as any);
-        }
-
+        formData.append('file', {
+            uri,
+            name: 'photo.jpg',
+            type: 'image/jpeg',
+        } as any);
         formData.append('upload_preset', uploadPreset);
 
         const response = await fetch(
@@ -132,11 +124,12 @@ export default function CreateReportScreen({ navigation }: any) {
             // Persist the profile if we have a userId - this will create or update the user record
             if (userId) {
                 try {
-                    await profilesAPI.updateProfile(userId, {
+                    const res = await profilesAPI.updateProfile(userId, {
                         name: formData.reporter,
                         phone: formData.phone,
                         email: formData.email,
                     });
+                    if (setUser) setUser({ id: res.id, name: res.name, phone: res.phone, email: res.email, role: res.role });
                 } catch (err) {
                     console.warn('Warning: failed to persist profile when creating report', err);
                 }
@@ -149,7 +142,7 @@ export default function CreateReportScreen({ navigation }: any) {
                 reporter: formData.reporter,
                 phone: formData.phone,
                 email: formData.email,
-                status: 'open',
+                status: 'waiting',
                 photos: uploadedPhotoUrls,
             });
 
@@ -179,22 +172,27 @@ export default function CreateReportScreen({ navigation }: any) {
     React.useEffect(() => {
         const init = async () => {
             try {
-                let id = await AsyncStorage.getItem('app_user_id');
-                if (!id) {
-                    id = `user-${Date.now()}`;
-                    await AsyncStorage.setItem('app_user_id', id);
+                // Ensure we have a user, if not create anonymous one
+                if (!user?.id) {
+                    await ensureAnonymousUser();
                 }
-                setUserId(id);
 
-                try {
-                    setProfileLoading(true);
-                    const data = await profilesAPI.getProfile(id);
-                    setFormData((prev) => ({ ...prev, reporter: data.name || '', phone: data.phone || '', email: data.email || '' }));
-                } catch (err: any) {
+                const currentUserId = user?.id;
+                if (currentUserId) {
+                    setUserId(currentUserId);
+                    setFormData((prev) => ({ ...prev, reporter: user.name || '', phone: user.phone || '', email: user.email || '' }));
+                } else {
+                    try {
+                        setProfileLoading(true);
+                        const randomUserId = `user_${Date.now()}`;
+                        const data = await profilesAPI.getProfile(randomUserId);
+                        setFormData((prev) => ({ ...prev, reporter: data.name || '', phone: data.phone || '', email: data.email || '' }));
+                    } catch (err: any) {
                     if (err?.response?.status === 404) {
                         // user not found – keep defaults blank so user can fill them
                     } else {
                         console.error('Error fetching profile for report:', err);
+                    }
                     }
                 }
             } catch (err) {

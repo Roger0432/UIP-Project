@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import {
     Text,
     List,
@@ -18,9 +18,9 @@ import { useAppTheme } from '../context/ThemeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { profilesAPI } from '../services/api';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }: any) {
     const theme = useTheme();
-    const { isWorker, setIsWorker } = useUser();
+    const { isWorker, setIsWorker, user, logout } = useUser();
     const { isDark, setThemeMode } = useAppTheme();
 
     const [profile, setProfile] = React.useState<{ name: string; phone: string; email: string }>({
@@ -67,11 +67,25 @@ export default function ProfileScreen() {
         }
     };
 
+    const handleLogout = async () => {
+        Alert.alert('Logout', 'Are you sure you want to logout?', [
+            { text: 'Cancel', onPress: () => {}, style: 'cancel' },
+            {
+                text: 'Logout',
+                onPress: async () => {
+                    await logout();
+                    // Navigation will be handled automatically by RootNavigator
+                },
+                style: 'destructive',
+            },
+        ]);
+    };
+
     React.useEffect(() => {
         // Ensure we have a userId stored, otherwise create one
         const init = async () => {
             try {
-                let id = await AsyncStorage.getItem('app_user_id');
+                let id = user?.id || (await AsyncStorage.getItem('app_user_id'));
                 if (!id) {
                     // Create a simple ID - for production use UUID
                     id = `user-${Date.now()}`;
@@ -179,7 +193,7 @@ export default function ProfileScreen() {
                         title="Logout"
                         left={(props) => <List.Icon {...props} icon="logout" />}
                         right={(props) => <List.Icon {...props} icon="chevron-right" />}
-                        onPress={() => { }}
+                        onPress={handleLogout}
                         style={styles.listItem}
                     />
                 </View>

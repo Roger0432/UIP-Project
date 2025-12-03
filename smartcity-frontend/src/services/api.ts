@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Incident, CreateIncidentData } from '../types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //const API_BASE_URL = 'http://10.0.17.125:5000'; //arnau
 const API_BASE_URL = 'http://10.0.17.180:5000'; //roger
@@ -16,9 +17,14 @@ const api = axios.create({
 
 // 📤 Interceptor para requests
 api.interceptors.request.use(
-    (config) => {
-        // Tu backend requiere autorización
-        config.headers['authorization'] = 'Bearer dummy-token';
+    async (config) => {
+        // Get token from storage
+        const token = await AsyncStorage.getItem('auth_token');
+        if (token) {
+            config.headers['authorization'] = `Bearer ${token}`;
+        } else {
+            config.headers['authorization'] = 'Bearer dummy-token';
+        }
         console.log(`📤 ${config.method?.toUpperCase()} ${config.url}`);
         return config;
     },
@@ -50,54 +56,6 @@ api.interceptors.response.use(
     }
 );
 
-export const incidentsAPI = {
-    // 🏥 Health check
-    healthCheck: async () => {
-        const response = await api.get('/health');
-        return response.data;
-    },
-
-    // Obtener todos los incidentes
-    getAll: async (filters?: {
-        status?: string;
-        reporter?: string;
-        location?: string;
-        page?: number;
-        limit?: number;
-    }) => {
-        const response = await api.get<{ data: Incident[]; meta: any }>('/api/incidents', {
-            params: filters,
-        });
-        return response.data;
-    },
-
-    // Obtener un incidente por ID
-    getById: async (id: number) => {
-        const response = await api.get<Incident>(`/api/incidents/${id}`);
-        return response.data;
-    },
-
-    // Crear nuevo incidente
-    create: async (data: CreateIncidentData) => {
-        const response = await api.post<Incident>('/api/incidents', data);
-        return response.data;
-    },
-
-    // Actualizar incidente
-    update: async (id: number, data: Partial<CreateIncidentData>) => {
-        const response = await api.put<Incident>(`/api/incidents/${id}`, data);
-        return response.data;
-    },
-
-    // Eliminar incidente (requiere admin)
-    delete: async (id: number) => {
-        const response = await api.delete(`/api/incidents/${id}`, {
-            headers: { 'x-admin': 'true' },
-        });
-        return response.data;
-    },
-};
-
 export const profilesAPI = {
     // Get user profile. userId is a string or uuid
     getProfile: async (userId: string) => {
@@ -110,6 +68,32 @@ export const profilesAPI = {
     updateProfile: async (userId: string, data: { name?: string; email?: string; phone?: string; role?: string }) => {
         const response = await api.put(`/api/profile/${userId}`, data);
         return response.data;
+    },
+};
+
+export const authAPI = {
+    // Register new user
+    register: async (email: string, password: string, name: string) => {
+        const response = await api.post('/api/auth/register', {
+            email,
+            password,
+            name,
+        });
+        return response.data;
+    },
+
+    // Login user
+    login: async (email: string, password: string) => {
+        const response = await api.post('/api/auth/login', {
+            email,
+            password,
+        });
+        return response.data;
+    },
+
+    // Logout user
+    logout: async () => {
+        return { message: 'Logged out successfully' };
     },
 };
 
