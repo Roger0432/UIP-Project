@@ -34,7 +34,17 @@ export default function RootNavigator() {
                     <Stack.Screen
                         name="ReportDetail"
                         component={ReportDetailScreen}
-                        options={{ title: 'Report detail' }}
+                        options={{
+                            title: 'Report detail',
+                            headerStyle: {
+                                backgroundColor: theme.colors.primary,
+                            },
+                            headerTintColor: '#fff',
+                            headerTitleStyle: {
+                                fontWeight: 'bold',
+                                color: '#fff',
+                            },
+                        }}
                     />
                 </>
             ) : (
