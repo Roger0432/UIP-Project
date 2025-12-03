@@ -4,7 +4,6 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    Alert,
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
@@ -28,34 +27,68 @@ export default function RegisterScreen({ navigation }: any) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    // Errors per camp
+    const [nameError, setNameError] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
+    const [formError, setFormError] = useState('');
+
     const validateInputs = () => {
+        let isValid = true;
+
+        // Nom obligatori i mínim 2 caràcters
         if (!name.trim()) {
-            Alert.alert('Validation Error', 'Please enter your name');
-            return false;
+            setNameError('El nom és obligatori');
+            isValid = false;
+        } else if (name.trim().length < 2) {
+            setNameError('El nom ha de tenir almenys 2 caràcters');
+            isValid = false;
         }
 
-        if (!email.includes('@')) {
-            Alert.alert('Validation Error', 'Please enter a valid email');
-            return false;
+        // Email vàlid
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) {
+            setEmailError('El correu és obligatori');
+            isValid = false;
+        } else if (!emailRegex.test(email)) {
+            setEmailError('Introdueix un correu electrònic vàlid');
+            isValid = false;
         }
 
-        if (password.length < 6) {
-            Alert.alert(
-                'Validation Error',
-                'Password must be at least 6 characters'
-            );
-            return false;
+        // Password mínim 8 caràcters, 1 majúscula, 1 minúscula, 1 número
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
+        if (!password) {
+            setPasswordError('La contrasenya és obligatòria');
+            isValid = false;
+        } else if (password.length < 8) {
+            setPasswordError('La contrasenya ha de tenir almenys 8 caràcters');
+            isValid = false;
+        } else if (!passwordRegex.test(password)) {
+            setPasswordError('Mínim 1 majúscula, 1 minúscula i 1 número');
+            isValid = false;
         }
 
-        if (password !== confirmPassword) {
-            Alert.alert('Validation Error', 'Passwords do not match');
-            return false;
+        // Confirmació de password
+        if (!confirmPassword) {
+            setConfirmPasswordError('Has de confirmar la contrasenya');
+            isValid = false;
+        } else if (password !== confirmPassword) {
+            setConfirmPasswordError('Les contrasenyes no coincideixen');
+            isValid = false;
         }
 
-        return true;
+        return isValid;
     };
 
     const handleRegister = async () => {
+        // Reset errors
+        setNameError('');
+        setEmailError('');
+        setPasswordError('');
+        setConfirmPasswordError('');
+        setFormError('');
+
         if (!validateInputs()) {
             return;
         }
@@ -74,19 +107,22 @@ export default function RegisterScreen({ navigation }: any) {
                 setEmail('');
                 setPassword('');
                 setConfirmPassword('');
-
-                Alert.alert('Success', 'Account created successfully!');
             } else {
-                Alert.alert('Error', response.message || 'Registration failed');
+                setFormError(response.message || 'Error en el registre');
             }
         } catch (error: any) {
             console.error('Register error:', error);
-            Alert.alert(
-                'Registration Failed',
-                error.response?.data?.message ||
-                    error.message ||
-                    'Unable to register. Please try again.'
-            );
+            if (error.response?.status === 409 || error.response?.status === 400) {
+                // Email ja existeix o error de validació
+                setFormError('Aquest correu ja està registrat');
+            } else if (error.response?.status === 422) {
+                setFormError('Dades invàlides');
+            } else {
+                setFormError(
+                    error.response?.data?.message ||
+                    'No s’ha pogut crear el compte. Torna-ho a provar.'
+                );
+            }
         } finally {
             setLoading(false);
         }
@@ -114,29 +150,51 @@ export default function RegisterScreen({ navigation }: any) {
                     <TextInput
                         label="Full Name"
                         value={name}
-                        onChangeText={setName}
+                        onChangeText={(text) => {
+                            setName(text);
+                            if (nameError) setNameError('');
+                        }}
                         mode="outlined"
                         style={styles.input}
                         disabled={loading}
                         editable={!loading}
+                        error={!!nameError}
                     />
+                    {nameError ? (
+                        <Text style={styles.errorText}>{nameError}</Text>
+                    ) : null}
 
                     <TextInput
                         label="Email"
                         value={email}
-                        onChangeText={setEmail}
+                        onChangeText={(text) => {
+                            setEmail(text);
+                            if (emailError) setEmailError('');
+                        }}
                         keyboardType="email-address"
                         autoCapitalize="none"
                         mode="outlined"
                         style={styles.input}
                         disabled={loading}
                         editable={!loading}
+                        error={!!emailError}
                     />
+                    {emailError ? (
+                        <Text style={styles.errorText}>{emailError}</Text>
+                    ) : null}
 
                     <TextInput
                         label="Password"
                         value={password}
-                        onChangeText={setPassword}
+                        onChangeText={(text) => {
+                            setPassword(text);
+                            if (passwordError) setPasswordError('');
+                            if (confirmPassword && text !== confirmPassword) {
+                                setConfirmPasswordError('Les contrasenyes no coincideixen');
+                            } else if (confirmPasswordError) {
+                                setConfirmPasswordError('');
+                            }
+                        }}
                         secureTextEntry={!showPassword}
                         mode="outlined"
                         style={styles.input}
@@ -148,12 +206,22 @@ export default function RegisterScreen({ navigation }: any) {
                                 onPress={() => setShowPassword(!showPassword)}
                             />
                         }
+                        error={!!passwordError}
                     />
+                    {passwordError ? (
+                        <Text style={styles.errorText}>{passwordError}</Text>
+                    ) : null}
 
                     <TextInput
                         label="Confirm Password"
                         value={confirmPassword}
-                        onChangeText={setConfirmPassword}
+                        onChangeText={(text) => {
+                            setConfirmPassword(text);
+                            if (confirmPasswordError) setConfirmPasswordError('');
+                            if (password && text !== password) {
+                                setConfirmPasswordError('Les contrasenyes no coincideixen');
+                            }
+                        }}
                         secureTextEntry={!showConfirmPassword}
                         mode="outlined"
                         style={styles.input}
@@ -162,12 +230,20 @@ export default function RegisterScreen({ navigation }: any) {
                         right={
                             <TextInput.Icon
                                 icon={showConfirmPassword ? 'eye-off' : 'eye'}
-                                onPress={() =>
-                                    setShowConfirmPassword(!showConfirmPassword)
-                                }
+                                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                             />
                         }
+                        error={!!confirmPasswordError}
                     />
+                    {confirmPasswordError ? (
+                        <Text style={styles.errorText}>{confirmPasswordError}</Text>
+                    ) : null}
+
+                    {formError ? (
+                        <Text style={[styles.errorText, styles.formError]}>
+                            {formError}
+                        </Text>
+                    ) : null}
 
                     <Button
                         mode="contained"
@@ -235,7 +311,7 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     input: {
-        marginBottom: 16,
+        marginBottom: 8,
     },
     registerButton: {
         marginTop: 8,
@@ -253,5 +329,14 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
         textDecorationLine: 'underline',
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 12,
+        marginBottom: 8,
+    },
+    formError: {
+        textAlign: 'center',
+        marginBottom: 16,
     },
 });

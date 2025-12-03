@@ -99,11 +99,21 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const logout = async () => {
+        // Clear in-memory state
         setUserState(null);
         setIsAuthenticatedState(false);
         setTokenState(null);
-        await AsyncStorage.removeItem('auth_token');
-        await AsyncStorage.removeItem('user_data');
+        setIsWorkerState(false);
+
+        // Clear persisted storage keys used across the app
+        try {
+            await AsyncStorage.removeItem('auth_token');
+            await AsyncStorage.removeItem('user_data');
+            await AsyncStorage.removeItem('user_is_worker');
+            await AsyncStorage.removeItem('app_user_id');
+        } catch (e) {
+            console.error('UserContext: error clearing storage on logout', e);
+        }
     };
 
     return (

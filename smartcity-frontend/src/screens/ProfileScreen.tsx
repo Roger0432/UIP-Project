@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, ActivityIndicator, Alert, Platform } from 'react-native';
 import {
     Text,
     List,
@@ -68,12 +68,33 @@ export default function ProfileScreen({ navigation }: any) {
     };
 
     const handleLogout = async () => {
+        console.log('ProfileScreen: handleLogout pressed');
+        // Quick debug alert to confirm the press handler runs on the device/emulator
+        Alert.alert('Debug', 'Logout pressed (debug)');
+        // On web Alert.alert may not show a dialog; call logout immediately there.
+        if (Platform.OS === 'web') {
+            console.log('ProfileScreen: running on web - calling logout() directly');
+            try {
+                await logout();
+                console.log('ProfileScreen: logout() finished (web)');
+            } catch (e) {
+                console.error('ProfileScreen: logout error (web)', e);
+            }
+            return;
+        }
+
         Alert.alert('Logout', 'Are you sure you want to logout?', [
-            { text: 'Cancel', onPress: () => {}, style: 'cancel' },
+            { text: 'Cancel', onPress: () => { console.log('ProfileScreen: logout cancelled'); }, style: 'cancel' },
             {
                 text: 'Logout',
                 onPress: async () => {
-                    await logout();
+                    console.log('ProfileScreen: logout confirmed - calling logout()');
+                    try {
+                        await logout();
+                        console.log('ProfileScreen: logout() finished');
+                    } catch (e) {
+                        console.error('ProfileScreen: logout error', e);
+                    }
                     // Navigation will be handled automatically by RootNavigator
                 },
                 style: 'destructive',
@@ -192,7 +213,14 @@ export default function ProfileScreen({ navigation }: any) {
                     <List.Item
                         title="Logout"
                         left={(props) => <List.Icon {...props} icon="logout" />}
-                        right={(props) => <List.Icon {...props} icon="chevron-right" />}
+                        right={() => (
+                            <IconButton
+                                icon="chevron-right"
+                                onPress={handleLogout}
+                                size={24}
+                                accessibilityLabel="Logout"
+                            />
+                        )}
                         onPress={handleLogout}
                         style={styles.listItem}
                     />

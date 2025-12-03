@@ -4,7 +4,6 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    Alert,
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
@@ -13,7 +12,6 @@ import {
     Button,
     useTheme,
     Text,
-    ActivityIndicator,
 } from 'react-native-paper';
 import { useUser } from '../context/UserContext';
 import { authAPI } from '../services/api';
@@ -26,56 +24,54 @@ export default function LoginScreen({ navigation }: any) {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [formError, setFormError] = useState('');
+
     const handleLogin = async () => {
+        setEmailError('');
+        setPasswordError('');
+        setFormError('');
+
         if (!email || !password) {
-            Alert.alert('Validation Error', 'Please fill in all fields');
+            if (!email) setEmailError('El correu és obligatori');
+            if (!password) setPasswordError('La contrasenya és obligatòria');
             return;
         }
 
         if (!email.includes('@')) {
-            Alert.alert('Validation Error', 'Please enter a valid email');
+            setEmailError('Introdueix un correu vàlid');
             return;
         }
 
         setLoading(true);
         try {
             const response = await authAPI.login(email, password);
-            
+
             if (response.token && response.user) {
                 setToken(response.token);
                 setUser(response.user);
                 setIsAuthenticated(true);
-                
-                // Reset form
+
                 setEmail('');
                 setPassword('');
-                
-                Alert.alert('Success', 'Logged in successfully!');
+
             } else {
-                Alert.alert('Error', response.message || 'Login failed');
+                setFormError(response.message || 'Usuari o contrasenya incorrectes');
             }
         } catch (error: any) {
             console.error('Login error:', error);
-            Alert.alert(
-                'Login Failed',
-                error.response?.data?.message || error.message || 'Unable to login. Please try again.'
-            );
+            if (error.response?.status === 401) {
+                setFormError('Usuari o contrasenya incorrectes');
+            } else {
+                setFormError(
+                    error.response?.data?.message ||
+                    'No s’ha pogut iniciar sessió. Torna-ho a provar.'
+                );
+            }
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleGuestAccess = async () => {
-        // Create anonymous user
-        const anonymousUser = {
-            id: `guest_${Date.now()}`,
-            name: 'Guest',
-            email: `guest_${Date.now()}@example.com`,
-            role: 'citizen',
-        };
-        setUser(anonymousUser);
-        setIsAuthenticated(false);
-        setToken(null);
     };
 
     return (
@@ -100,19 +96,29 @@ export default function LoginScreen({ navigation }: any) {
                     <TextInput
                         label="Email"
                         value={email}
-                        onChangeText={setEmail}
+                        onChangeText={(text) => {
+                            setEmail(text);
+                            if (emailError) setEmailError('');
+                        }}
                         keyboardType="email-address"
                         autoCapitalize="none"
                         mode="outlined"
                         style={styles.input}
                         disabled={loading}
                         editable={!loading}
+                        error={!!emailError}
                     />
+                    {emailError ? (
+                        <Text style={{ color: 'red', marginBottom: 8 }}>{emailError}</Text>
+                    ) : null}
 
                     <TextInput
                         label="Password"
                         value={password}
-                        onChangeText={setPassword}
+                        onChangeText={(text) => {
+                            setPassword(text);
+                            if (passwordError) setPasswordError('');
+                        }}
                         secureTextEntry={!showPassword}
                         mode="outlined"
                         style={styles.input}
@@ -124,7 +130,17 @@ export default function LoginScreen({ navigation }: any) {
                                 onPress={() => setShowPassword(!showPassword)}
                             />
                         }
+                        error={!!passwordError}
                     />
+                    {passwordError ? (
+                        <Text style={{ color: 'red', marginBottom: 8 }}>{passwordError}</Text>
+                    ) : null}
+
+                    {formError ? (
+                        <Text style={{ color: 'red', textAlign: 'center', marginBottom: 8 }}>
+                            {formError}
+                        </Text>
+                    ) : null}
 
                     <Button
                         mode="contained"
@@ -159,14 +175,6 @@ export default function LoginScreen({ navigation }: any) {
                         />
                     </View>
 
-                    <Button
-                        mode="outlined"
-                        onPress={handleGuestAccess}
-                        style={styles.guestButton}
-                        disabled={loading}
-                    >
-                        Continue as Guest
-                    </Button>
                 </View>
 
                 <View style={styles.registerContainer}>
@@ -179,9 +187,7 @@ export default function LoginScreen({ navigation }: any) {
                         Don't have an account?{' '}
                     </Text>
                     <TouchableOpacity
-                        onPress={() =>
-                            navigation.navigate('Register')
-                        }
+                        onPress={() => navigation.navigate('Register')}
                         disabled={loading}
                     >
                         <Text
@@ -223,7 +229,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     formContainer: {
-        marginBottom: 30,
     },
     input: {
         marginBottom: 16,
