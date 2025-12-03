@@ -24,9 +24,9 @@ export default function ProfileScreen() {
     const { isDark, setThemeMode } = useAppTheme();
 
     const [profile, setProfile] = React.useState<{ name: string; phone: string; email: string }>({
-        name: '',
-        phone: '',
-        email: '',
+        name: 'Joel',
+        phone: '123456789',
+        email: 'joel@joel.com',
     });
     const [loading, setLoading] = React.useState<boolean>(true);
     const [userId, setUserId] = React.useState<string | null>(null);

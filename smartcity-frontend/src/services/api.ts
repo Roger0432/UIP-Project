@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { Incident, CreateIncidentData } from '../types';
 
-//const API_BASE_URL = 'http://10.0.17.125:5000';
-const API_BASE_URL = 'http://10.0.17.180:5000';
+//const API_BASE_URL = 'http://10.0.17.125:5000'; //arnau
+const API_BASE_URL = 'http://10.0.17.180:5000'; //roger
 
 console.log('🌐 API conectando a:', API_BASE_URL);
 
@@ -102,6 +102,7 @@ export const profilesAPI = {
     // Get user profile. userId is a string or uuid
     getProfile: async (userId: string) => {
         const response = await api.get(`/api/profile/${userId}`);
+        console.log('Profile:', response.data);
         return response.data;
     },
 

@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require("express");
 const { Pool } = require("pg");
 const app = express();
+const cors = require("cors");
+app.use(cors());
 app.use(express.json());
 
 const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_URL;

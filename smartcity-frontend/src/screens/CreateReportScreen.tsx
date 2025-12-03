@@ -6,6 +6,7 @@ import {
     Image,
     TouchableOpacity,
     Alert,
+    Platform,
 } from 'react-native';
 import {
     TextInput,
@@ -81,11 +82,19 @@ export default function CreateReportScreen({ navigation }: any) {
         const uploadPreset = 'UIDProject';
 
         const formData = new FormData();
-        formData.append('file', {
-            uri,
-            name: 'photo.jpg',
-            type: 'image/jpeg',
-        } as any);
+
+        if (Platform.OS === 'web') {
+            const response = await fetch(uri);
+            const blob = await response.blob();
+            formData.append('file', blob);
+        } else {
+            formData.append('file', {
+                uri,
+                name: 'photo.jpg',
+                type: 'image/jpeg',
+            } as any);
+        }
+
         formData.append('upload_preset', uploadPreset);
 
         const response = await fetch(
