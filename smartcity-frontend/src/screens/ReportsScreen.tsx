@@ -6,35 +6,18 @@ import {
     ActivityIndicator,
     Searchbar,
 } from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { incidentsAPI } from '../services/api';
 import { Incident } from '../types';
 import ReportCard from '../components/ReportCard';
+import { useUser } from '../context/UserContext';
 
 export default function ReportsScreen({ navigation }: any) {
     const theme = useTheme();
+    const { isWorker } = useUser();
     const [incidents, setIncidents] = useState<Incident[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [isWorker, setIsWorker] = useState(false);
-
-    useEffect(() => {
-        const loadWorkerFlag = async () => {
-            const w = await AsyncStorage.getItem('user_is_worker');
-            setIsWorker(w === 'true');
-        };
-
-        const unsubscribe = navigation.addListener('focus', () => {
-            loadWorkerFlag();
-            fetchIncidents();
-        });
-
-        loadWorkerFlag();
-        fetchIncidents();
-
-        return unsubscribe;
-    }, [navigation]);
 
     const fetchIncidents = async () => {
         try {
@@ -48,6 +31,16 @@ export default function ReportsScreen({ navigation }: any) {
             setRefreshing(false);
         }
     };
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            fetchIncidents();
+        });
+
+        fetchIncidents();
+
+        return unsubscribe;
+    }, [navigation]);
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -88,7 +81,6 @@ export default function ReportsScreen({ navigation }: any) {
                         incident={item}
                         isWorker={isWorker}
                         onPress={() => handleOpenDetail(item)}
-                        // ya no cambiamos estado desde la tarjeta
                         onChangeStatus={undefined}
                     />
                 )}

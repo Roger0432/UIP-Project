@@ -47,15 +47,16 @@ export default function LoginScreen({ navigation }: any) {
         setLoading(true);
         try {
             const response = await authAPI.login(email, password);
+            // Se asume que response = { token, user: { ... , role?: 'worker' | 'citizen' } }
 
             if (response.token && response.user) {
                 setToken(response.token);
-                setUser(response.user);
+                setUser(response.user);      // aquí se deriva isWorker según user.role
                 setIsAuthenticated(true);
 
                 setEmail('');
                 setPassword('');
-
+                // Navegas a donde toque (por ejemplo, raíz de la app) si aún no lo haces fuera
             } else {
                 setFormError(response.message || 'Usuari o contrasenya incorrectes');
             }
@@ -174,7 +175,6 @@ export default function LoginScreen({ navigation }: any) {
                             ]}
                         />
                     </View>
-
                 </View>
 
                 <View style={styles.registerContainer}>
@@ -208,59 +208,27 @@ export default function LoginScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    scrollContent: {
-        flexGrow: 1,
-        justifyContent: 'center',
-        padding: 20,
-    },
-    headerContainer: {
-        alignItems: 'center',
-        marginBottom: 40,
-    },
-    title: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-    subtitle: {
-        fontSize: 16,
-    },
-    formContainer: {
-    },
-    input: {
-        marginBottom: 16,
-    },
-    loginButton: {
-        marginTop: 8,
-        paddingVertical: 6,
-    },
+    container: { flex: 1 },
+    scrollContent: { flexGrow: 1, justifyContent: 'center', padding: 20 },
+    headerContainer: { alignItems: 'center', marginBottom: 40 },
+    title: { fontSize: 32, fontWeight: 'bold', marginBottom: 8 },
+    subtitle: { fontSize: 16 },
+    formContainer: {},
+    input: { marginBottom: 16 },
+    loginButton: { marginTop: 8, paddingVertical: 6 },
     dividerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginVertical: 20,
     },
-    divider: {
-        flex: 1,
-        height: 1,
-    },
-    dividerText: {
-        marginHorizontal: 10,
-        fontSize: 14,
-    },
-    guestButton: {
-        paddingVertical: 6,
-    },
+    divider: { flex: 1, height: 1 },
+    dividerText: { marginHorizontal: 10, fontSize: 14 },
     registerContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    registerText: {
-        fontSize: 14,
-    },
+    registerText: { fontSize: 14 },
     registerLink: {
         fontSize: 14,
         fontWeight: 'bold',

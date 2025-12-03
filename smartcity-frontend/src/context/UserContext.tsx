@@ -37,23 +37,30 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         const load = async () => {
-            const v = await AsyncStorage.getItem('user_is_worker');
-            if (v !== null) setIsWorkerState(v === 'true');
-            
-            const storedToken = await AsyncStorage.getItem('auth_token');
-            const storedUser = await AsyncStorage.getItem('user_data');
-            
-            if (storedToken) {
-                setTokenState(storedToken);
-                setIsAuthenticatedState(true);
-            }
-            
-            if (storedUser) {
-                try {
-                    setUserState(JSON.parse(storedUser));
-                } catch (e) {
-                    console.error('Error parsing stored user:', e);
+            try {
+                const storedToken = await AsyncStorage.getItem('auth_token');
+                const storedUser = await AsyncStorage.getItem('user_data');
+                const storedWorker = await AsyncStorage.getItem('user_is_worker');
+
+                if (storedToken) {
+                    setTokenState(storedToken);
+                    setIsAuthenticatedState(true);
                 }
+
+                if (storedUser) {
+                    const parsedUser: UserProfile = JSON.parse(storedUser);
+                    setUserState(parsedUser);
+                    // Derivar isWorker del rol si existe
+                    if (parsedUser.role) {
+                        const worker = parsedUser.role === 'worker';
+                        setIsWorkerState(worker);
+                        await AsyncStorage.setItem('user_is_worker', worker.toString());
+                    }
+                } else if (storedWorker !== null) {
+                    setIsWorkerState(storedWorker === 'true');
+                }
+            } catch (e) {
+                console.error('UserContext: error loading from storage', e);
             }
         };
         load();
@@ -68,8 +75,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         setUserState(userData);
         if (userData) {
             AsyncStorage.setItem('user_data', JSON.stringify(userData));
+            if (userData.role) {
+                const worker = userData.role === 'worker';
+                setIsWorkerState(worker);
+                AsyncStorage.setItem('user_is_worker', worker.toString());
+            }
         } else {
             AsyncStorage.removeItem('user_data');
+            // si borras usuario, también dejas de ser worker por defecto
+            setIsWorkerState(false);
+            AsyncStorage.removeItem('user_is_worker');
         }
     };
 
@@ -99,13 +114,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const logout = async () => {
-        // Clear in-memory state
         setUserState(null);
         setIsAuthenticatedState(false);
         setTokenState(null);
         setIsWorkerState(false);
 
-        // Clear persisted storage keys used across the app
         try {
             await AsyncStorage.removeItem('auth_token');
             await AsyncStorage.removeItem('user_data');
