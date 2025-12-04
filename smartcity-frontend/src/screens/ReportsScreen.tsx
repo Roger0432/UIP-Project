@@ -1,15 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet, RefreshControl } from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import { View, FlatList, StyleSheet, RefreshControl, ScrollView } from 'react-native';
 import {
     Text,
     useTheme,
     ActivityIndicator,
     Searchbar,
+    Chip,
+    Menu,
+    Button,
+    IconButton,
 } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { incidentsAPI } from '../services/api';
 import { Incident } from '../types';
 import ReportCard from '../components/ReportCard';
 import { useUser } from '../context/UserContext';
+
+type StatusFilter = 'all' | 'waiting' | 'accepted' | 'in_progress' | 'denied' | 'finished';
+type SortOption = 'date_desc' | 'date_asc' | 'status';
 
 export default function ReportsScreen({ navigation }: any) {
     const theme = useTheme();
@@ -18,6 +26,9 @@ export default function ReportsScreen({ navigation }: any) {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+    const [sortBy, setSortBy] = useState<SortOption>('date_desc');
+    const [sortMenuVisible, setSortMenuVisible] = useState(false);
 
     const fetchIncidents = async () => {
         try {
@@ -51,6 +62,65 @@ export default function ReportsScreen({ navigation }: any) {
         navigation.navigate('ReportDetail', { incident: item, isWorker });
     };
 
+    // Filter and sort logic
+    const filteredAndSortedIncidents = useMemo(() => {
+        let filtered = [...incidents];
+
+        // Apply search filter
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(
+                (incident) =>
+                    incident.title.toLowerCase().includes(query) ||
+                    incident.description.toLowerCase().includes(query) ||
+                    incident.location.toLowerCase().includes(query) ||
+                    incident.reporter.toLowerCase().includes(query)
+            );
+        }
+
+        // Apply status filter
+        if (statusFilter !== 'all') {
+            filtered = filtered.filter((incident) => incident.status === statusFilter);
+        }
+
+        // Apply sorting
+        filtered.sort((a, b) => {
+            switch (sortBy) {
+                case 'date_desc':
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                case 'date_asc':
+                    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+                case 'status':
+                    const statusOrder = ['waiting', 'accepted', 'in_progress', 'finished', 'denied'];
+                    return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+                default:
+                    return 0;
+            }
+        });
+
+        return filtered;
+    }, [incidents, searchQuery, statusFilter, sortBy]);
+
+    const getStatusCount = (status: StatusFilter) => {
+        if (status === 'all') return incidents.length;
+        return incidents.filter((i) => i.status === status).length;
+    };
+
+    const statusFilters: { key: StatusFilter; label: string; icon: string }[] = [
+        { key: 'all', label: 'All', icon: 'format-list-bulleted' },
+        { key: 'waiting', label: 'Waiting', icon: 'clock-outline' },
+        { key: 'accepted', label: 'Accepted', icon: 'check-circle' },
+        { key: 'in_progress', label: 'In Progress', icon: 'progress-clock' },
+        { key: 'finished', label: 'Finished', icon: 'check-decagram' },
+        { key: 'denied', label: 'Denied', icon: 'close-circle' },
+    ];
+
+    const sortOptions: { key: SortOption; label: string; icon: string }[] = [
+        { key: 'date_desc', label: 'Newest First', icon: 'sort-calendar-descending' },
+        { key: 'date_asc', label: 'Oldest First', icon: 'sort-calendar-ascending' },
+        { key: 'status', label: 'By Status', icon: 'sort-variant' },
+    ];
+
     if (loading) {
         return (
             <View style={[styles.centered, { backgroundColor: theme.colors.background }]}>
@@ -62,20 +132,104 @@ export default function ReportsScreen({ navigation }: any) {
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
             <View style={styles.header}>
-                <Text variant="headlineMedium" style={styles.headerTitle}>
-                    {isWorker ? 'All reports' : 'Your reports'}
-                </Text>
+                <View style={styles.headerTop}>
+                    <Text variant="headlineMedium" style={styles.headerTitle}>
+                        {isWorker ? 'All reports' : 'Your reports'}
+                    </Text>
+                    <Text variant="bodyMedium" style={styles.countText}>
+                        {filteredAndSortedIncidents.length} {filteredAndSortedIncidents.length === 1 ? 'report' : 'reports'}
+                    </Text>
+                </View>
 
                 <Searchbar
                     placeholder="Search reports..."
                     onChangeText={setSearchQuery}
                     value={searchQuery}
                     style={styles.searchBar}
+                    icon="magnify"
+                    clearIcon="close"
                 />
+
+                {/* Status Filters */}
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.filtersContainer}
+                >
+                    {statusFilters.map((filter) => (
+                        <Chip
+                            key={filter.key}
+                            selected={statusFilter === filter.key}
+                            onPress={() => setStatusFilter(filter.key)}
+                            style={[
+                                styles.filterChip,
+                                statusFilter === filter.key && {
+                                    backgroundColor: theme.colors.primaryContainer,
+                                },
+                            ]}
+                            icon={() => (
+                                <MaterialCommunityIcons
+                                    name={filter.icon as any}
+                                    size={18}
+                                    color={
+                                        statusFilter === filter.key
+                                            ? theme.colors.onPrimaryContainer
+                                            : theme.colors.onSurfaceVariant
+                                    }
+                                />
+                            )}
+                            textStyle={{
+                                color:
+                                    statusFilter === filter.key
+                                        ? theme.colors.onPrimaryContainer
+                                        : theme.colors.onSurfaceVariant,
+                            }}
+                        >
+                            {filter.label} ({getStatusCount(filter.key)})
+                        </Chip>
+                    ))}
+                </ScrollView>
+
+                {/* Sort Options */}
+                <View style={styles.sortContainer}>
+                    <Menu
+                        visible={sortMenuVisible}
+                        onDismiss={() => setSortMenuVisible(false)}
+                        anchor={
+                            <Button
+                                mode="outlined"
+                                onPress={() => setSortMenuVisible(true)}
+                                icon={() => (
+                                    <MaterialCommunityIcons
+                                        name={sortOptions.find((s) => s.key === sortBy)?.icon as any}
+                                        size={20}
+                                        color={theme.colors.primary}
+                                    />
+                                )}
+                                style={styles.sortButton}
+                                contentStyle={styles.sortButtonContent}
+                            >
+                                {sortOptions.find((s) => s.key === sortBy)?.label}
+                            </Button>
+                        }
+                    >
+                        {sortOptions.map((option) => (
+                            <Menu.Item
+                                key={option.key}
+                                onPress={() => {
+                                    setSortBy(option.key);
+                                    setSortMenuVisible(false);
+                                }}
+                                title={option.label}
+                                leadingIcon={option.icon}
+                            />
+                        ))}
+                    </Menu>
+                </View>
             </View>
 
             <FlatList
-                data={incidents}
+                data={filteredAndSortedIncidents}
                 renderItem={({ item }) => (
                     <ReportCard
                         incident={item}
@@ -95,11 +249,25 @@ export default function ReportsScreen({ navigation }: any) {
                 }
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
+                        <MaterialCommunityIcons
+                            name="file-document-outline"
+                            size={64}
+                            color={theme.colors.onSurfaceVariant}
+                            style={styles.emptyIcon}
+                        />
                         <Text
-                            variant="bodyLarge"
-                            style={{ color: theme.colors.onSurfaceVariant }}
+                            variant="titleMedium"
+                            style={{ color: theme.colors.onSurfaceVariant, marginBottom: 8 }}
                         >
-                            No reports found.
+                            No reports found
+                        </Text>
+                        <Text
+                            variant="bodyMedium"
+                            style={{ color: theme.colors.onSurfaceVariant, textAlign: 'center' }}
+                        >
+                            {searchQuery || statusFilter !== 'all'
+                                ? 'Try adjusting your filters'
+                                : 'No reports available'}
                         </Text>
                     </View>
                 }
@@ -111,9 +279,50 @@ export default function ReportsScreen({ navigation }: any) {
 const styles = StyleSheet.create({
     container: { flex: 1 },
     centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    header: { padding: 16 },
-    headerTitle: { marginBottom: 16, fontWeight: '600' },
-    searchBar: { elevation: 2 },
+    header: { paddingTop: 16, paddingBottom: 8 },
+    headerTop: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        marginBottom: 12,
+    },
+    headerTitle: { fontWeight: 'bold' },
+    countText: {
+        color: '#666',
+        fontWeight: '500',
+    },
+    searchBar: {
+        marginHorizontal: 16,
+        marginBottom: 12,
+        elevation: 2,
+    },
+    filtersContainer: {
+        paddingHorizontal: 16,
+        gap: 8,
+        paddingBottom: 12,
+    },
+    filterChip: {
+        marginRight: 8,
+    },
+    sortContainer: {
+        paddingHorizontal: 16,
+        paddingBottom: 8,
+    },
+    sortButton: {
+        borderRadius: 8,
+    },
+    sortButtonContent: {
+        flexDirection: 'row-reverse',
+    },
     list: { padding: 16, paddingTop: 8 },
-    emptyContainer: { alignItems: 'center', marginTop: 32 },
+    emptyContainer: {
+        alignItems: 'center',
+        marginTop: 64,
+        paddingHorizontal: 32,
+    },
+    emptyIcon: {
+        marginBottom: 16,
+        opacity: 0.5,
+    },
 });
