@@ -32,7 +32,6 @@ export default function ReportsScreen({ navigation }: any) {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
     const [sortBy, setSortBy] = useState<SortOption>('date_desc');
-    const [sortMenuVisible, setSortMenuVisible] = useState(false);
     const [hiddenIds, setHiddenIds] = useState<number[]>([]);
 
     useEffect(() => {
@@ -130,7 +129,6 @@ export default function ReportsScreen({ navigation }: any) {
     const filteredAndSortedIncidents = useMemo(() => {
         let base = incidents;
 
-        // Hidden vs visibles
         if (statusFilter === 'hidden') {
             base = incidents.filter((i) => hiddenIds.includes(i.id));
         } else {
@@ -177,7 +175,6 @@ export default function ReportsScreen({ navigation }: any) {
 
     const getStatusCount = (status: StatusFilter) => {
         if (status === 'hidden') {
-            // solo los ocultos míos
             if (!isWorker && user?.name) {
                 return incidents.filter(
                     (i) => hiddenIds.includes(i.id) && i.reporter === user.name
@@ -186,10 +183,8 @@ export default function ReportsScreen({ navigation }: any) {
             return hiddenIds.length;
         }
 
-        // base = visibles (no ocultos)
         let visible = incidents.filter((i) => !hiddenIds.includes(i.id));
 
-        // si no es worker, solo los suyos
         if (!isWorker && user?.name) {
             visible = visible.filter((i) => i.reporter === user.name);
         }

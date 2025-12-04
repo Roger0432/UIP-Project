@@ -123,7 +123,6 @@ export default function CreateReportScreen({ navigation }: any) {
                 uploadedPhotoUrls.push(url);
             }
 
-            // Persist the profile if we have a userId - this will create or update the user record
             if (userId) {
                 try {
                     const res = await profilesAPI.updateProfile(userId, {
@@ -174,7 +173,6 @@ export default function CreateReportScreen({ navigation }: any) {
     React.useEffect(() => {
         const init = async () => {
             try {
-                // Ensure we have a user, if not create anonymous one
                 if (!user?.id) {
                     await ensureAnonymousUser();
                 }
@@ -191,7 +189,6 @@ export default function CreateReportScreen({ navigation }: any) {
                         setFormData((prev) => ({ ...prev, reporter: data.name || '', phone: data.phone || '', email: data.email || '' }));
                     } catch (err: any) {
                         if (err?.response?.status === 404) {
-                            // user not found – keep defaults blank so user can fill them
                         } else {
                             console.error('Error fetching profile for report:', err);
                         }

@@ -15,7 +15,6 @@ const api = axios.create({
     timeout: 10000,
 });
 
-// 📤 Interceptor para requests
 api.interceptors.request.use(
     async (config) => {
         // Get token from storage
@@ -34,7 +33,7 @@ api.interceptors.request.use(
     }
 );
 
-// 📥 Interceptor para responses
+
 api.interceptors.response.use(
     (response) => {
         console.log(`✅ ${response.status} ${response.config.url}`);
@@ -57,13 +56,13 @@ api.interceptors.response.use(
 );
 
 export const incidentsAPI = {
-    // 🏥 Health check
+    // Health check
     healthCheck: async () => {
         const response = await api.get('/health');
         return response.data;
     },
 
-    // Obtener todos los incidentes
+    // Obtain all incidents
     getAll: async (filters?: {
         status?: string;
         reporter?: string;
@@ -77,25 +76,25 @@ export const incidentsAPI = {
         return response.data;
     },
 
-    // Obtener un incidente por ID
+    // Obtain incident by ID
     getById: async (id: number) => {
         const response = await api.get<Incident>(`/api/incidents/${id}`);
         return response.data;
     },
 
-    // Crear nuevo incidente
+    // Create report
     create: async (data: CreateIncidentData) => {
         const response = await api.post<Incident>('/api/incidents', data);
         return response.data;
     },
 
-    // Actualizar incidente
+    // Update report
     update: async (id: number, data: Partial<CreateIncidentData>) => {
         const response = await api.put<Incident>(`/api/incidents/${id}`, data);
         return response.data;
     },
 
-    // Eliminar incidente (requiere admin)
+    // Delete report
     delete: async (id: number) => {
         const response = await api.delete(`/api/incidents/${id}`, {
             headers: { 'x-admin': 'true' },
@@ -105,7 +104,6 @@ export const incidentsAPI = {
 };
 
 export const profilesAPI = {
-    // Get user profile. userId is a string or uuid
     getProfile: async (userId: string) => {
         const response = await api.get(`/api/profile/${userId}`);
         console.log('👤 Profile loaded:', {
@@ -117,7 +115,6 @@ export const profilesAPI = {
         return response.data;
     },
 
-    // Update or create user profile (AHORA con IMAGE)
     updateProfile: async (userId: string, data: {
         name?: string;
         email?: string;
