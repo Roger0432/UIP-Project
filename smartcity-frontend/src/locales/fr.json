@@ -1,0 +1,129 @@
+{
+  "app": { "name": "SmartCity" },
+
+  "auth": {
+    "login": "Connexion",
+    "loggingIn": "Connexion en cours...",
+    "email": "Email",
+    "password": "Mot de passe",
+    "loginSubtitle": "Connectez-vous à votre compte",
+    "noAccount": "Vous n'avez pas de compte?",
+    "registerHere": "Inscrivez-vous ici",
+    "errors": {
+      "emailRequired": "L'email est obligatoire",
+      "passwordRequired": "Le mot de passe est obligatoire",
+      "invalidEmail": "Veuillez entrer un email valide",
+      "invalidCredentials": "Identifiant ou mot de passe incorrect"
+    },
+    "or": "ou",
+    "loginHere": "Connectez-vous ici"
+  },
+
+  "register": {
+    "title": "Créez votre compte",
+    "fullName": "Nom complet",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "register": "S'inscrire",
+    "creating": "Création du compte...",
+    "alreadyHaveAccount": "Vous avez déjà un compte?",
+    "errors": {
+      "nameRequired": "Le nom est obligatoire",
+      "nameMin": "Le nom doit avoir au moins 2 caractères",
+      "passwordMin": "Le mot de passe doit avoir au moins 8 caractères",
+      "passwordComplexity": "Minimum 1 majuscule, 1 minuscule et 1 chiffre",
+      "confirmRequired": "Vous devez confirmer le mot de passe",
+      "passwordsMismatch": "Les mots de passe ne correspondent pas"
+    }
+  },
+
+  "reports": {
+    "searchPlaceholder": "Rechercher les rapports...",
+    "noReports": "Aucun rapport trouvé",
+    "tryAdjust": "Essayez d'ajuster vos filtres",
+    "noAvailable": "Aucun rapport disponible",
+    "filters": {
+      "all": "Tous",
+      "waiting": "En attente",
+      "accepted": "Acceptés",
+      "in_progress": "En cours",
+      "finished": "Terminés",
+      "denied": "Refusés",
+      "hidden": "Masqués"
+    },
+    "deleteTitle": "Supprimer le rapport",
+    "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer ce rapport? Cette action ne peut pas être annulée.",
+    "deleteCancel": "Annuler",
+    "deleteConfirm": "Supprimer",
+    "deleteError": "Impossible de supprimer le rapport. Veuillez réessayer."
+  },
+
+  "reportCard": {
+    "waiting": "En attente d'acceptation",
+    "in_progress": "En cours",
+    "accepted": "Accepté",
+    "denied": "Refusé",
+    "finished": "Terminé",
+    "hide": "Masquer",
+    "unhide": "Afficher",
+    "delete": "Supprimer"
+  },
+
+  "reportDetail": {
+    "description": "Description",
+    "dateTime": "Date et heure",
+    "location": "Emplacement",
+    "reportedBy": "Signalé par",
+    "accept": "Accepter",
+    "deny": "Refuser",
+    "markInProgress": "Marquer comme en cours",
+    "markFinished": "Marquer comme terminé"
+  },
+
+  "createReport": {
+    "permissionTitle": "Permission requise",
+    "permissionPhotos": "Les autorisations de galerie sont requises!",
+    "permissionLocation": "Les autorisations d'emplacement sont requises!",
+    "name": "Nom",
+    "phone": "Numéro de téléphone",
+    "mail": "Email",
+    "title": "Titre de l'incident",
+    "description": "Description",
+    "location": "Emplacement",
+    "selectLocation": "Sélectionnez votre emplacement",
+    "photos": "Photos",
+    "createReport": "Créer un rapport",
+    "successTitle": "Succès",
+    "successMessage": "Le rapport a été créé avec succès!",
+    "error": "Erreur",
+    "fillRequired": "Veuillez remplir tous les champs obligatoires",
+    "failedCreate": "Impossible de créer le rapport. Veuillez réessayer.",
+    "ok": "OK"
+  },
+
+  "profile": {
+    "phone": "Téléphone",
+    "mail": "Email",
+    "darkMode": "Mode sombre",
+    "darkModeDesc": "Choisissez votre thème",
+    "workerMode": "Mode travailleur",
+    "workerModeDesc": "Activez si vous êtes un employé municipal",
+    "logout": "Déconnexion",
+    "editProfile": "Modifier le profil",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "language": "Langue",
+    "chooseLanguage": "Choisir la langue",
+    "unnamed": "Utilisateur sans nom",
+    "logoutConfirmTitle": "Déconnexion",
+    "logoutConfirmMessage": "Êtes-vous sûr de vouloir vous déconnecter?"
+  },
+
+  "navigation": {
+    "reports": "Rapports",
+    "create": "Créer",
+    "createReport": "Créer un rapport",
+    "profile": "Profil"
+  }
+}

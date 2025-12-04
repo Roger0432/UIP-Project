@@ -5,6 +5,10 @@ import en from './locales/en.json';
 import es from './locales/es.json';
 import cs from './locales/cs.json';
 import ca from './locales/ca.json';
+import fr from './locales/fr.json';
+import de from './locales/de.json';
+import it from './locales/it.json';
+import pt from './locales/pt.json';
 
 i18n.use(initReactI18next).init({
   compatibilityJSON: 'v4',
@@ -13,6 +17,10 @@ i18n.use(initReactI18next).init({
     es: { translation: es },
     cs: { translation: cs },
     ca: { translation: ca },
+    fr: { translation: fr },
+    de: { translation: de },
+    it: { translation: it },
+    pt: { translation: pt },
   },
   lng: 'en',
   fallbackLng: 'en',

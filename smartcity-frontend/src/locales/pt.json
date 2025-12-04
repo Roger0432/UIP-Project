@@ -1,0 +1,129 @@
+{
+  "app": { "name": "SmartCity" },
+
+  "auth": {
+    "login": "Login",
+    "loggingIn": "A fazer login...",
+    "email": "Email",
+    "password": "Senha",
+    "loginSubtitle": "Faça login na sua conta",
+    "noAccount": "Não tem uma conta?",
+    "registerHere": "Registre-se aqui",
+    "errors": {
+      "emailRequired": "Email é obrigatório",
+      "passwordRequired": "Senha é obrigatória",
+      "invalidEmail": "Insira um email válido",
+      "invalidCredentials": "Usuário ou senha incorretos"
+    },
+    "or": "ou",
+    "loginHere": "Faça login aqui"
+  },
+
+  "register": {
+    "title": "Crie sua conta",
+    "fullName": "Nome completo",
+    "email": "Email",
+    "password": "Senha",
+    "confirmPassword": "Confirmar senha",
+    "register": "Registre-se",
+    "creating": "Criando conta...",
+    "alreadyHaveAccount": "Já tem uma conta?",
+    "errors": {
+      "nameRequired": "Nome é obrigatório",
+      "nameMin": "Nome deve ter pelo menos 2 caracteres",
+      "passwordMin": "Senha deve ter pelo menos 8 caracteres",
+      "passwordComplexity": "Mínimo 1 maiúscula, 1 minúscula e 1 número",
+      "confirmRequired": "Você deve confirmar a senha",
+      "passwordsMismatch": "As senhas não correspondem"
+    }
+  },
+
+  "reports": {
+    "searchPlaceholder": "Procurar relatórios...",
+    "noReports": "Nenhum relatório encontrado",
+    "tryAdjust": "Tente ajustar seus filtros",
+    "noAvailable": "Nenhum relatório disponível",
+    "filters": {
+      "all": "Todos",
+      "waiting": "Aguardando",
+      "accepted": "Aceitos",
+      "in_progress": "Em progresso",
+      "finished": "Concluídos",
+      "denied": "Negados",
+      "hidden": "Ocultos"
+    },
+    "deleteTitle": "Deletar relatório",
+    "deleteConfirmMessage": "Tem certeza de que quer deletar este relatório? Esta ação não pode ser desfeita.",
+    "deleteCancel": "Cancelar",
+    "deleteConfirm": "Deletar",
+    "deleteError": "Falha ao deletar o relatório. Tente novamente."
+  },
+
+  "reportCard": {
+    "waiting": "Aguardando aceitação",
+    "in_progress": "Em progresso",
+    "accepted": "Aceito",
+    "denied": "Negado",
+    "finished": "Concluído",
+    "hide": "Ocultar",
+    "unhide": "Mostrar",
+    "delete": "Deletar"
+  },
+
+  "reportDetail": {
+    "description": "Descrição",
+    "dateTime": "Data e hora",
+    "location": "Localização",
+    "reportedBy": "Relatado por",
+    "accept": "Aceitar",
+    "deny": "Negar",
+    "markInProgress": "Marcar como em progresso",
+    "markFinished": "Marcar como concluído"
+  },
+
+  "createReport": {
+    "permissionTitle": "Permissão necessária",
+    "permissionPhotos": "Permissão da galeria é necessária!",
+    "permissionLocation": "Permissão de localização é necessária!",
+    "name": "Nome",
+    "phone": "Número de telefone",
+    "mail": "Email",
+    "title": "Título do incidente",
+    "description": "Descrição",
+    "location": "Localização",
+    "selectLocation": "Selecione sua localização",
+    "photos": "Fotos",
+    "createReport": "Criar relatório",
+    "successTitle": "Sucesso",
+    "successMessage": "Relatório criado com sucesso!",
+    "error": "Erro",
+    "fillRequired": "Preencha todos os campos obrigatórios",
+    "failedCreate": "Falha ao criar o relatório. Tente novamente.",
+    "ok": "OK"
+  },
+
+  "profile": {
+    "phone": "Telefone",
+    "mail": "Email",
+    "darkMode": "Modo escuro",
+    "darkModeDesc": "Escolha seu tema",
+    "workerMode": "Modo trabalhador",
+    "workerModeDesc": "Ative se você é um funcionário da cidade",
+    "logout": "Sair",
+    "editProfile": "Editar perfil",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "language": "Idioma",
+    "chooseLanguage": "Escolher idioma",
+    "unnamed": "Usuário sem nome",
+    "logoutConfirmTitle": "Sair",
+    "logoutConfirmMessage": "Tem certeza de que quer sair?"
+  },
+
+  "navigation": {
+    "reports": "Relatórios",
+    "create": "Criar",
+    "createReport": "Criar relatório",
+    "profile": "Perfil"
+  }
+}

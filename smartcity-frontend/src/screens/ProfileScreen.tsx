@@ -12,6 +12,7 @@ import {
     TextInput,
     Button,
     IconButton,
+    RadioButton,
 } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
@@ -25,6 +26,18 @@ export default function ProfileScreen({ navigation }: any) {
     const { isWorker, setIsWorker, user, logout } = useUser();
     const { isDark, setThemeMode } = useAppTheme();
     const { t } = useTranslation();
+
+    // Language configuration with names and flag emojis
+    const languages = [
+        { code: 'en', label: 'English', flag: '🇬🇧' },
+        { code: 'es', label: 'Español', flag: '🇪🇸' },
+        { code: 'cs', label: 'Čeština', flag: '🇨🇿' },
+        { code: 'ca', label: 'Català', flag: '' },
+        { code: 'fr', label: 'Français', flag: '🇫🇷' },
+        { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
+        { code: 'it', label: 'Italiano', flag: '🇮🇹' },
+        { code: 'pt', label: 'Português', flag: '🇵🇹' },
+    ];
 
     const [langDialogVisible, setLangDialogVisible] = React.useState(false);
 
@@ -292,10 +305,18 @@ export default function ProfileScreen({ navigation }: any) {
                 <Dialog visible={langDialogVisible} onDismiss={() => setLangDialogVisible(false)}>
                     <Dialog.Title>{t('profile.chooseLanguage')}</Dialog.Title>
                     <Dialog.Content>
-                        <List.Item title="English" onPress={() => changeLanguage('en')} />
-                        <List.Item title="Español" onPress={() => changeLanguage('es')} />
-                        <List.Item title="Čeština" onPress={() => changeLanguage('cs')} />
-                        <List.Item title="Català" onPress={() => changeLanguage('ca')} />
+                        <RadioButton.Group value={i18n.language} onValueChange={changeLanguage}>
+                            {languages.map((lang) => (
+                                <View key={lang.code} style={styles.languageOption}>
+                                    <RadioButton.Item
+                                        label={`${lang.flag} ${lang.label}`}
+                                        value={lang.code}
+                                        position="leading"
+                                        style={styles.radioItem}
+                                    />
+                                </View>
+                            ))}
+                        </RadioButton.Group>
                     </Dialog.Content>
                     <Dialog.Actions>
                         <Button onPress={() => setLangDialogVisible(false)}>{t('profile.cancel')}</Button>
@@ -342,5 +363,11 @@ const styles = StyleSheet.create({
     },
     input: {
         marginBottom: 12,
+    },
+    languageOption: {
+        marginVertical: 4,
+    },
+    radioItem: {
+        paddingVertical: 0,
     },
 });

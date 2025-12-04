@@ -1,0 +1,129 @@
+{
+  "app": { "name": "SmartCity" },
+
+  "auth": {
+    "login": "Anmelden",
+    "loggingIn": "Anmeldung läuft...",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "loginSubtitle": "Melden Sie sich bei Ihrem Konto an",
+    "noAccount": "Sie haben kein Konto?",
+    "registerHere": "Hier registrieren",
+    "errors": {
+      "emailRequired": "E-Mail ist erforderlich",
+      "passwordRequired": "Passwort ist erforderlich",
+      "invalidEmail": "Bitte geben Sie eine gültige E-Mail ein",
+      "invalidCredentials": "Benutzer oder Passwort falsch"
+    },
+    "or": "oder",
+    "loginHere": "Hier anmelden"
+  },
+
+  "register": {
+    "title": "Erstellen Sie Ihr Konto",
+    "fullName": "Vollständiger Name",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "register": "Registrieren",
+    "creating": "Konto wird erstellt...",
+    "alreadyHaveAccount": "Sie haben bereits ein Konto?",
+    "errors": {
+      "nameRequired": "Name ist erforderlich",
+      "nameMin": "Name muss mindestens 2 Zeichen lang sein",
+      "passwordMin": "Passwort muss mindestens 8 Zeichen lang sein",
+      "passwordComplexity": "Mindestens 1 Großbuchstabe, 1 Kleinbuchstabe und 1 Ziffer",
+      "confirmRequired": "Sie müssen das Passwort bestätigen",
+      "passwordsMismatch": "Passwörter stimmen nicht überein"
+    }
+  },
+
+  "reports": {
+    "searchPlaceholder": "Berichte durchsuchen...",
+    "noReports": "Keine Berichte gefunden",
+    "tryAdjust": "Versuchen Sie, Ihre Filter anzupassen",
+    "noAvailable": "Keine Berichte verfügbar",
+    "filters": {
+      "all": "Alle",
+      "waiting": "Ausstehend",
+      "accepted": "Akzeptiert",
+      "in_progress": "In Bearbeitung",
+      "finished": "Abgeschlossen",
+      "denied": "Abgelehnt",
+      "hidden": "Verborgen"
+    },
+    "deleteTitle": "Bericht löschen",
+    "deleteConfirmMessage": "Sind Sie sicher, dass Sie diesen Bericht löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteCancel": "Abbrechen",
+    "deleteConfirm": "Löschen",
+    "deleteError": "Bericht konnte nicht gelöscht werden. Bitte versuchen Sie es erneut."
+  },
+
+  "reportCard": {
+    "waiting": "Warten auf Annahme",
+    "in_progress": "In Bearbeitung",
+    "accepted": "Akzeptiert",
+    "denied": "Abgelehnt",
+    "finished": "Abgeschlossen",
+    "hide": "Ausblenden",
+    "unhide": "Anzeigen",
+    "delete": "Löschen"
+  },
+
+  "reportDetail": {
+    "description": "Beschreibung",
+    "dateTime": "Datum und Uhrzeit",
+    "location": "Ort",
+    "reportedBy": "Gemeldet von",
+    "accept": "Akzeptieren",
+    "deny": "Ablehnen",
+    "markInProgress": "Als in Bearbeitung markieren",
+    "markFinished": "Als abgeschlossen markieren"
+  },
+
+  "createReport": {
+    "permissionTitle": "Berechtigung erforderlich",
+    "permissionPhotos": "Galerien-Berechtigung erforderlich!",
+    "permissionLocation": "Standort-Berechtigung erforderlich!",
+    "name": "Name",
+    "phone": "Telefonnummer",
+    "mail": "E-Mail",
+    "title": "Titel des Vorfalls",
+    "description": "Beschreibung",
+    "location": "Ort",
+    "selectLocation": "Wählen Sie Ihren Standort",
+    "photos": "Fotos",
+    "createReport": "Bericht erstellen",
+    "successTitle": "Erfolg",
+    "successMessage": "Bericht erfolgreich erstellt!",
+    "error": "Fehler",
+    "fillRequired": "Bitte füllen Sie alle erforderlichen Felder aus",
+    "failedCreate": "Bericht konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+    "ok": "OK"
+  },
+
+  "profile": {
+    "phone": "Telefon",
+    "mail": "E-Mail",
+    "darkMode": "Dunkler Modus",
+    "darkModeDesc": "Wählen Sie Ihr Design",
+    "workerMode": "Arbeitermodus",
+    "workerModeDesc": "Aktivieren Sie, wenn Sie ein Stadtangestellter sind",
+    "logout": "Abmelden",
+    "editProfile": "Profil bearbeiten",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "language": "Sprache",
+    "chooseLanguage": "Sprache wählen",
+    "unnamed": "Benutzer ohne Namen",
+    "logoutConfirmTitle": "Abmelden",
+    "logoutConfirmMessage": "Sind Sie sicher, dass Sie sich abmelden möchten?"
+  },
+
+  "navigation": {
+    "reports": "Berichte",
+    "create": "Erstellen",
+    "createReport": "Bericht erstellen",
+    "profile": "Profil"
+  }
+}

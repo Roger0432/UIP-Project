@@ -1,0 +1,129 @@
+{
+  "app": { "name": "SmartCity" },
+
+  "auth": {
+    "login": "Accedi",
+    "loggingIn": "Accesso in corso...",
+    "email": "Email",
+    "password": "Password",
+    "loginSubtitle": "Accedi al tuo account",
+    "noAccount": "Non hai un account?",
+    "registerHere": "Registrati qui",
+    "errors": {
+      "emailRequired": "L'email è obbligatorio",
+      "passwordRequired": "La password è obbligatoria",
+      "invalidEmail": "Inserisci un'email valida",
+      "invalidCredentials": "Utente o password non corretti"
+    },
+    "or": "o",
+    "loginHere": "Accedi qui"
+  },
+
+  "register": {
+    "title": "Crea il tuo account",
+    "fullName": "Nome completo",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Conferma password",
+    "register": "Registrati",
+    "creating": "Creazione account...",
+    "alreadyHaveAccount": "Hai già un account?",
+    "errors": {
+      "nameRequired": "Il nome è obbligatorio",
+      "nameMin": "Il nome deve avere almeno 2 caratteri",
+      "passwordMin": "La password deve avere almeno 8 caratteri",
+      "passwordComplexity": "Almeno 1 maiuscola, 1 minuscola e 1 numero",
+      "confirmRequired": "Devi confermare la password",
+      "passwordsMismatch": "Le password non corrispondono"
+    }
+  },
+
+  "reports": {
+    "searchPlaceholder": "Cerca rapporti...",
+    "noReports": "Nessun rapporto trovato",
+    "tryAdjust": "Prova ad aggiustare i tuoi filtri",
+    "noAvailable": "Nessun rapporto disponibile",
+    "filters": {
+      "all": "Tutti",
+      "waiting": "In sospeso",
+      "accepted": "Accettati",
+      "in_progress": "In corso",
+      "finished": "Completati",
+      "denied": "Negati",
+      "hidden": "Nascosti"
+    },
+    "deleteTitle": "Elimina rapporto",
+    "deleteConfirmMessage": "Sei sicuro di voler eliminare questo rapporto? Questa azione non può essere annullata.",
+    "deleteCancel": "Annulla",
+    "deleteConfirm": "Elimina",
+    "deleteError": "Impossibile eliminare il rapporto. Riprova."
+  },
+
+  "reportCard": {
+    "waiting": "In attesa di accettazione",
+    "in_progress": "In corso",
+    "accepted": "Accettato",
+    "denied": "Negato",
+    "finished": "Completato",
+    "hide": "Nascondi",
+    "unhide": "Mostra",
+    "delete": "Elimina"
+  },
+
+  "reportDetail": {
+    "description": "Descrizione",
+    "dateTime": "Data e ora",
+    "location": "Posizione",
+    "reportedBy": "Segnalato da",
+    "accept": "Accetta",
+    "deny": "Nega",
+    "markInProgress": "Segna come in corso",
+    "markFinished": "Segna come completato"
+  },
+
+  "createReport": {
+    "permissionTitle": "Autorizzazione richiesta",
+    "permissionPhotos": "Autorizzazione della galleria richiesta!",
+    "permissionLocation": "Autorizzazione della posizione richiesta!",
+    "name": "Nome",
+    "phone": "Numero di telefono",
+    "mail": "Email",
+    "title": "Titolo dell'incidente",
+    "description": "Descrizione",
+    "location": "Posizione",
+    "selectLocation": "Seleziona la tua posizione",
+    "photos": "Foto",
+    "createReport": "Crea rapporto",
+    "successTitle": "Successo",
+    "successMessage": "Rapporto creato con successo!",
+    "error": "Errore",
+    "fillRequired": "Compila tutti i campi obbligatori",
+    "failedCreate": "Impossibile creare il rapporto. Riprova.",
+    "ok": "OK"
+  },
+
+  "profile": {
+    "phone": "Telefono",
+    "mail": "Email",
+    "darkMode": "Modalità scura",
+    "darkModeDesc": "Scegli il tuo tema",
+    "workerMode": "Modalità lavoratore",
+    "workerModeDesc": "Abilita se sei un dipendente comunale",
+    "logout": "Esci",
+    "editProfile": "Modifica profilo",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "language": "Lingua",
+    "chooseLanguage": "Scegli lingua",
+    "unnamed": "Utente senza nome",
+    "logoutConfirmTitle": "Esci",
+    "logoutConfirmMessage": "Sei sicuro di voler uscire?"
+  },
+
+  "navigation": {
+    "reports": "Rapporti",
+    "create": "Crea",
+    "createReport": "Crea rapporto",
+    "profile": "Profilo"
+  }
+}
