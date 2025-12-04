@@ -23,7 +23,7 @@ const HIDDEN_KEY = 'hidden_incident_ids';
 
 export default function ReportsScreen({ navigation }: any) {
     const theme = useTheme();
-    const { isWorker } = useUser();
+    const { isWorker, user } = useUser();
     const [incidents, setIncidents] = useState<Incident[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -128,11 +128,15 @@ export default function ReportsScreen({ navigation }: any) {
     const filteredAndSortedIncidents = useMemo(() => {
         let base = incidents;
 
-        // Si estamos en "hidden", partimos solo de los ocultos.
+        // Hidden vs visibles
         if (statusFilter === 'hidden') {
             base = incidents.filter((i) => hiddenIds.includes(i.id));
         } else {
             base = incidents.filter((i) => !hiddenIds.includes(i.id));
+        }
+
+        if (!isWorker && user?.id) {
+            base = base.filter((incident) => incident.reporter === user.name);
         }
 
         let filtered = [...base];
@@ -167,17 +171,32 @@ export default function ReportsScreen({ navigation }: any) {
         });
 
         return filtered;
-    }, [incidents, searchQuery, statusFilter, sortBy, hiddenIds]);
+    }, [incidents, searchQuery, statusFilter, sortBy, hiddenIds, isWorker, user?.id]);
 
     const getStatusCount = (status: StatusFilter) => {
         if (status === 'hidden') {
+            // solo los ocultos míos
+            if (!isWorker && user?.name) {
+                return incidents.filter(
+                    (i) => hiddenIds.includes(i.id) && i.reporter === user.name
+                ).length;
+            }
             return hiddenIds.length;
         }
 
-        const visible = incidents.filter((i) => !hiddenIds.includes(i.id));
+        // base = visibles (no ocultos)
+        let visible = incidents.filter((i) => !hiddenIds.includes(i.id));
+
+        // si no es worker, solo los suyos
+        if (!isWorker && user?.name) {
+            visible = visible.filter((i) => i.reporter === user.name);
+        }
+
         if (status === 'all') return visible.length;
+
         return visible.filter((i) => i.status === status).length;
     };
+
 
     const statusFilters: { key: StatusFilter; label: string; icon: string }[] = [
         { key: 'all', label: 'All', icon: 'format-list-bulleted' },
