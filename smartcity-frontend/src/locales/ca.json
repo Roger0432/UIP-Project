@@ -78,7 +78,13 @@
     "accept": "Acceptar",
     "deny": "Denegar",
     "markInProgress": "Marcar com en curs",
-    "markFinished": "Marcar com finalitzat"
+    "markFinished": "Marcar com finalitzat",
+    "reporterInfo": "Informació del denunciant",
+    "phone": "Telèfon",
+    "email": "Correu",
+    "noContactInfo": "No hi ha informació de contacte disponible",
+    "callReporter": "Trucar al denunciant",
+    "emailReporter": "Enviar correu al denunciant"
   },
 
   "createReport": {

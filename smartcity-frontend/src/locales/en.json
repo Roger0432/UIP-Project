@@ -78,7 +78,13 @@
     "accept": "Accept",
     "deny": "Deny",
     "markInProgress": "Mark in progress",
-    "markFinished": "Mark finished"
+    "markFinished": "Mark finished",
+    "reporterInfo": "Reporter Information",
+    "phone": "Phone",
+    "email": "Email",
+    "noContactInfo": "No contact information available",
+    "callReporter": "Call reporter",
+    "emailReporter": "Email reporter"
   },
 
   "createReport": {

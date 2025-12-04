@@ -78,7 +78,13 @@
     "accept": "Accepter",
     "deny": "Refuser",
     "markInProgress": "Marquer comme en cours",
-    "markFinished": "Marquer comme terminé"
+    "markFinished": "Marquer comme terminé",
+    "reporterInfo": "Informations du signalant",
+    "phone": "Téléphone",
+    "email": "Email",
+    "noContactInfo": "Aucune information de contact disponible",
+    "callReporter": "Appeler le signalant",
+    "emailReporter": "Envoyer un email au signalant"
   },
 
   "createReport": {

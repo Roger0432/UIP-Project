@@ -73,7 +73,13 @@
     "accept": "Aceptar",
     "deny": "Denegar",
     "markInProgress": "Marcar en progreso",
-    "markFinished": "Marcar finalizado"
+    "markFinished": "Marcar finalizado",
+    "reporterInfo": "Información del denunciante",
+    "phone": "Teléfono",
+    "email": "Correo",
+    "noContactInfo": "No hay información de contacto disponible",
+    "callReporter": "Llamar al denunciante",
+    "emailReporter": "Enviar correo al denunciante"
   },
   "createReport": {
     "permissionTitle": "Permiso necesario",

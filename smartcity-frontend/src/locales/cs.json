@@ -76,7 +76,13 @@
     "accept": "Přijmout",
     "deny": "Zamítnout",
     "markInProgress": "Označit jako probíhající",
-    "markFinished": "Označit jako dokončené"
+    "markFinished": "Označit jako dokončené",
+    "reporterInfo": "Informace o nahlašovateli",
+    "phone": "Telefon",
+    "email": "Email",
+    "noContactInfo": "Nejsou k dispozici žádné kontaktní informace",
+    "callReporter": "Zavolat nahlašovateli",
+    "emailReporter": "Poslat email nahlašovateli"
   },
   "createReport": {
     "permissionTitle": "Požadováno oprávnění",

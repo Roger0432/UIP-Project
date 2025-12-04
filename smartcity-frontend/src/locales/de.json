@@ -78,7 +78,13 @@
     "accept": "Akzeptieren",
     "deny": "Ablehnen",
     "markInProgress": "Als in Bearbeitung markieren",
-    "markFinished": "Als abgeschlossen markieren"
+    "markFinished": "Als abgeschlossen markieren",
+    "reporterInfo": "Informationen des Melders",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "noContactInfo": "Keine Kontaktinformationen verfügbar",
+    "callReporter": "Melder anrufen",
+    "emailReporter": "E-Mail an Melder senden"
   },
 
   "createReport": {

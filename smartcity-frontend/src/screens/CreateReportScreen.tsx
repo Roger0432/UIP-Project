@@ -221,14 +221,14 @@ export default function CreateReportScreen({ navigation }: any) {
                 <TextInput
                     label={t('createReport.name')}
                     value={formData.reporter}
-                    onChangeText={(text) => setFormData({ ...formData, reporter: text })}
+                    editable={false}
                     style={[styles.input, styles.halfInput]}
                     mode="outlined"
                 />
                 <TextInput
                     label={t('createReport.phone')}
                     value={formData.phone}
-                    onChangeText={(text) => setFormData({ ...formData, phone: text })}
+                    editable={false}
                     style={[styles.input, styles.halfInput]}
                     mode="outlined"
                     keyboardType="phone-pad"
@@ -238,7 +238,7 @@ export default function CreateReportScreen({ navigation }: any) {
             <TextInput
                 label={t('createReport.mail')}
                 value={formData.email}
-                onChangeText={(text) => setFormData({ ...formData, email: text })}
+                editable={false}
                 style={styles.input}
                 mode="outlined"
                 keyboardType="email-address"

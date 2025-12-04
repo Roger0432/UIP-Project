@@ -78,7 +78,13 @@
     "accept": "Accetta",
     "deny": "Nega",
     "markInProgress": "Segna come in corso",
-    "markFinished": "Segna come completato"
+    "markFinished": "Segna come completato",
+    "reporterInfo": "Informazioni del segnalatore",
+    "phone": "Telefono",
+    "email": "Email",
+    "noContactInfo": "Nessuna informazione di contatto disponibile",
+    "callReporter": "Chiama il segnalatore",
+    "emailReporter": "Invia email al segnalatore"
   },
 
   "createReport": {

@@ -4,6 +4,8 @@ export interface Incident {
     description: string;
     location: string;
     reporter: string;
+    phone?: string;
+    email?: string;
     status: 'waiting'
         | 'accepted'
         | 'denied'

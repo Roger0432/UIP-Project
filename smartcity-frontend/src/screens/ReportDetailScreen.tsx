@@ -20,6 +20,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
     const [updating, setUpdating] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
     const [showFullPhoto, setShowFullPhoto] = useState(false);
+    const [showReporterInfo, setShowReporterInfo] = useState(false);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -101,6 +102,20 @@ export default function ReportDetailScreen({ route, navigation }: any) {
         setSelectedPhoto(uri);
         setShowFullPhoto(true);
     };
+
+    // Fetch full incident details including contact info when component mounts
+    React.useEffect(() => {
+        const fetchIncidentDetails = async () => {
+            try {
+                const updated = await incidentsAPI.getById(initialIncident.id);
+                setIncident(updated as Incident);
+            } catch (error) {
+                console.error('Error fetching incident details:', error);
+            }
+        };
+
+        fetchIncidentDetails();
+    }, [initialIncident.id]);
 
     const formatDate = (dateString: string) => {
         if (!dateString) return '';
@@ -215,7 +230,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
 
                         <Divider style={styles.divider} />
 
-                        <View style={styles.detailRow}>
+                        <Pressable onPress={() => setShowReporterInfo(true)} style={styles.detailRow}>
                             <View style={[styles.iconContainer, { backgroundColor: theme.colors.secondaryContainer }]}>
                                 <MaterialCommunityIcons name="account" size={24} color={theme.colors.secondary} />
                             </View>
@@ -225,7 +240,8 @@ export default function ReportDetailScreen({ route, navigation }: any) {
                                     {incident.reporter}
                                 </Text>
                             </View>
-                        </View>
+                            <MaterialCommunityIcons name="chevron-right" size={24} color={theme.colors.onSurfaceVariant} />
+                        </Pressable>
                     </Card.Content>
                 </Card>
 
@@ -278,6 +294,115 @@ export default function ReportDetailScreen({ route, navigation }: any) {
                                 resizeMode="contain"
                             />
                         )}
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Reporter Info Modal */}
+            <Modal
+                visible={showReporterInfo}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setShowReporterInfo(false)}
+            >
+                <View style={styles.reporterModalContainer}>
+                    <View style={[styles.reporterModalContent, { backgroundColor: theme.colors.background }]}>
+                        <View style={styles.reporterModalHeader}>
+                            <Text variant="headlineSmall" style={styles.reporterModalTitle}>
+                                {t('reportDetail.reporterInfo')}
+                            </Text>
+                            <IconButton
+                                icon="close"
+                                size={24}
+                                onPress={() => setShowReporterInfo(false)}
+                            />
+                        </View>
+
+                        <ScrollView contentContainerStyle={styles.reporterModalBody}>
+                            {/* Name */}
+                            <Card style={styles.reporterCard}>
+                                <Card.Content style={styles.reporterCardContent}>
+                                    <View style={styles.reporterDetailRow}>
+                                        <View style={[styles.reporterIconContainer, { backgroundColor: theme.colors.primaryContainer }]}>
+                                            <MaterialCommunityIcons name="account" size={24} color={theme.colors.primary} />
+                                        </View>
+                                        <View style={styles.reporterInfoColumn}>
+                                            <Text variant="labelMedium" style={styles.reporterInfoLabel}>
+                                                {t('reportDetail.reportedBy')}
+                                            </Text>
+                                            <Text variant="bodyMedium" style={styles.reporterInfoValue}>
+                                                {incident.reporter || 'N/A'}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </Card.Content>
+                            </Card>
+
+                            {/* Phone */}
+                            {incident.phone && (
+                                <Card style={styles.reporterCard}>
+                                    <Card.Content style={styles.reporterCardContent}>
+                                        <Pressable
+                                            style={styles.reporterDetailRow}
+                                            onPress={() => Linking.openURL(`tel:${incident.phone}`)}
+                                        >
+                                            <View style={[styles.reporterIconContainer, { backgroundColor: theme.colors.secondaryContainer }]}>
+                                                <MaterialCommunityIcons name="phone" size={24} color={theme.colors.secondary} />
+                                            </View>
+                                            <View style={styles.reporterInfoColumn}>
+                                                <Text variant="labelMedium" style={styles.reporterInfoLabel}>
+                                                    {t('reportDetail.phone')}
+                                                </Text>
+                                                <Text variant="bodyMedium" style={[styles.reporterInfoValue, { color: theme.colors.primary }]}>
+                                                    {incident.phone}
+                                                </Text>
+                                            </View>
+                                        </Pressable>
+                                    </Card.Content>
+                                </Card>
+                            )}
+
+                            {/* Email */}
+                            {incident.email && (
+                                <Card style={styles.reporterCard}>
+                                    <Card.Content style={styles.reporterCardContent}>
+                                        <Pressable
+                                            style={styles.reporterDetailRow}
+                                            onPress={() => Linking.openURL(`mailto:${incident.email}`)}
+                                        >
+                                            <View style={[styles.reporterIconContainer, { backgroundColor: theme.colors.tertiaryContainer }]}>
+                                                <MaterialCommunityIcons name="email" size={24} color={theme.colors.tertiary} />
+                                            </View>
+                                            <View style={styles.reporterInfoColumn}>
+                                                <Text variant="labelMedium" style={styles.reporterInfoLabel}>
+                                                    {t('reportDetail.email')}
+                                                </Text>
+                                                <Text variant="bodyMedium" style={[styles.reporterInfoValue, { color: theme.colors.primary }]}>
+                                                    {incident.email}
+                                                </Text>
+                                            </View>
+                                        </Pressable>
+                                    </Card.Content>
+                                </Card>
+                            )}
+
+                            {!incident.phone && !incident.email && (
+                                <View style={styles.noContactInfo}>
+                                    <MaterialCommunityIcons name="information-outline" size={32} color={theme.colors.onSurfaceVariant} />
+                                    <Text variant="bodyMedium" style={styles.noContactText}>
+                                        {t('reportDetail.noContactInfo')}
+                                    </Text>
+                                </View>
+                            )}
+                        </ScrollView>
+
+                        <Button
+                            mode="contained"
+                            onPress={() => setShowReporterInfo(false)}
+                            style={styles.reporterCloseButton}
+                        >
+                            {t('createReport.ok')}
+                        </Button>
                     </View>
                 </View>
             </Modal>
@@ -409,5 +534,77 @@ const styles = StyleSheet.create({
     fullPhoto: {
         width: width,
         height: '80%',
+    },
+    reporterModalContainer: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    reporterModalContent: {
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        paddingBottom: 24,
+        maxHeight: '90%',
+        elevation: 8,
+    },
+    reporterModalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: 8,
+    },
+    reporterModalTitle: {
+        fontWeight: 'bold',
+    },
+    reporterModalBody: {
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+        gap: 12,
+    },
+    reporterCard: {
+        elevation: 1,
+        marginBottom: 8,
+    },
+    reporterCardContent: {
+        padding: 0,
+    },
+    reporterDetailRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+    },
+    reporterIconContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 16,
+    },
+    reporterInfoColumn: {
+        flex: 1,
+    },
+    reporterInfoLabel: {
+        marginBottom: 4,
+    },
+    reporterInfoValue: {
+        fontWeight: '500',
+    },
+    noContactInfo: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 40,
+        gap: 12,
+    },
+    noContactText: {
+        color: '#999',
+    },
+    reporterCloseButton: {
+        marginHorizontal: 16,
+        marginTop: 8,
+        borderRadius: 8,
     },
 });

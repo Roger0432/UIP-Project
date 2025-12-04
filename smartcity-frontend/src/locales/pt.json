@@ -78,7 +78,13 @@
     "accept": "Aceitar",
     "deny": "Negar",
     "markInProgress": "Marcar como em progresso",
-    "markFinished": "Marcar como concluído"
+    "markFinished": "Marcar como concluído",
+    "reporterInfo": "Informações do Relatante",
+    "phone": "Telefone",
+    "email": "Email",
+    "noContactInfo": "Nenhuma informação de contato disponível",
+    "callReporter": "Ligar para o Relatante",
+    "emailReporter": "Enviar email ao Relatante"
   },
 
   "createReport": {
