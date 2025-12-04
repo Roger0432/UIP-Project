@@ -38,9 +38,9 @@ export default function ProfileScreen({ navigation }: any) {
     };
 
     const [profile, setProfile] = React.useState<{ name: string; phone: string; email: string }>({
-        name: 'Joel',
-        phone: '123456789',
-        email: 'joel@joel.com',
+        name: '',
+        phone: '',
+        email: '',
     });
     const [loading, setLoading] = React.useState<boolean>(true);
     const [userId, setUserId] = React.useState<string | null>(null);
