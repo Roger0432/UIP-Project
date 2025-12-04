@@ -1,6 +1,7 @@
 {
-  "app": { "name": "SmartCity" },
-
+  "app": {
+    "name": "SmartCity"
+  },
   "auth": {
     "login": "Login",
     "loggingIn": "A fazer login...",
@@ -18,7 +19,6 @@
     "or": "ou",
     "loginHere": "Faça login aqui"
   },
-
   "register": {
     "title": "Crie sua conta",
     "fullName": "Nome completo",
@@ -37,7 +37,6 @@
       "passwordsMismatch": "As senhas não correspondem"
     }
   },
-
   "reports": {
     "searchPlaceholder": "Procurar relatórios...",
     "noReports": "Nenhum relatório encontrado",
@@ -58,7 +57,6 @@
     "deleteConfirm": "Deletar",
     "deleteError": "Falha ao deletar o relatório. Tente novamente."
   },
-
   "reportCard": {
     "waiting": "Aguardando aceitação",
     "in_progress": "Em progresso",
@@ -69,7 +67,6 @@
     "unhide": "Mostrar",
     "delete": "Deletar"
   },
-
   "reportDetail": {
     "description": "Descrição",
     "dateTime": "Data e hora",
@@ -86,7 +83,6 @@
     "callReporter": "Ligar para o Relatante",
     "emailReporter": "Enviar email ao Relatante"
   },
-
   "createReport": {
     "permissionTitle": "Permissão necessária",
     "permissionPhotos": "Permissão da galeria é necessária!",
@@ -107,7 +103,6 @@
     "failedCreate": "Falha ao criar o relatório. Tente novamente.",
     "ok": "OK"
   },
-
   "profile": {
     "phone": "Telefone",
     "mail": "Email",
@@ -123,9 +118,11 @@
     "chooseLanguage": "Escolher idioma",
     "unnamed": "Usuário sem nome",
     "logoutConfirmTitle": "Sair",
-    "logoutConfirmMessage": "Tem certeza de que quer sair?"
+    "logoutConfirmMessage": "Tem certeza de que quer sair?",
+    "changePhoto": "Alterar foto",
+    "notSpecified": "Não especificado",
+    "name": "Nome"
   },
-
   "navigation": {
     "reports": "Relatórios",
     "create": "Criar",

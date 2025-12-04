@@ -123,7 +123,10 @@
     "chooseLanguage": "Tria idioma",
     "unnamed": "Usuari sense nom",
     "logoutConfirmTitle": "Tancar sessió",
-    "logoutConfirmMessage": "Estàs segur de que vols tancar sessió?"
+    "logoutConfirmMessage": "Estàs segur de que vols tancar sessió?",
+    "changePhoto": "Canviar foto",
+    "notSpecified": "No especificat",
+    "name": "Nom"
   },
 
   "navigation": {

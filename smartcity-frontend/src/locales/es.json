@@ -1,5 +1,7 @@
 {
-  "app": { "name": "SmartCity" },
+  "app": {
+    "name": "SmartCity"
+  },
   "auth": {
     "login": "Iniciar sesión",
     "loggingIn": "Iniciando sesión...",
@@ -116,9 +118,11 @@
     "chooseLanguage": "Elige idioma",
     "unnamed": "Usuario sin nombre",
     "logoutConfirmTitle": "Cerrar sesión",
-    "logoutConfirmMessage": "¿Estás seguro de que quieres cerrar sesión?"
-  }
-  ,
+    "logoutConfirmMessage": "¿Estás seguro de que quieres cerrar sesión?",
+    "changePhoto": "Cambiar foto",
+    "notSpecified": "No especificado",
+    "name": "Nombre"
+  },
   "navigation": {
     "reports": "Informes",
     "create": "Crear",

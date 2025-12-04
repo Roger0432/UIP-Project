@@ -1,5 +1,7 @@
 {
-  "app": { "name": "SmartCity" },
+  "app": {
+    "name": "SmartCity"
+  },
   "auth": {
     "login": "Přihlásit se",
     "loggingIn": "Přihlašování...",
@@ -13,8 +15,7 @@
       "passwordRequired": "Heslo je povinné",
       "invalidEmail": "Zadejte platný email",
       "invalidCredentials": "Nesprávné uživatelské jméno nebo heslo"
-    }
-    ,
+    },
     "or": "nebo",
     "loginHere": "Přihlásit se zde"
   },
@@ -25,8 +26,7 @@
     "password": "Heslo",
     "confirmPassword": "Potvrdit heslo",
     "register": "Registrovat se",
-    "creating": "Vytváření účtu..."
-    ,
+    "creating": "Vytváření účtu...",
     "alreadyHaveAccount": "Už máte účet?",
     "errors": {
       "nameRequired": "Jméno je povinné",
@@ -50,8 +50,7 @@
       "finished": "Dokončeno",
       "denied": "Zamítnuto",
       "hidden": "Skryté"
-    }
-    ,
+    },
     "deleteTitle": "Smazat hlášení",
     "deleteConfirmMessage": "Opravdu chcete toto hlášení smazat? Tuto akci nelze vrátit zpět.",
     "deleteCancel": "Zrušit",
@@ -101,8 +100,7 @@
     "successMessage": "Hlášení bylo úspěšně vytvořeno!",
     "error": "Chyba",
     "fillRequired": "Vyplňte všechna povinná pole",
-    "failedCreate": "Nepodařilo se vytvořit hlášení. Zkuste to prosím znovu."
-    ,
+    "failedCreate": "Nepodařilo se vytvořit hlášení. Zkuste to prosím znovu.",
     "ok": "OK"
   },
   "profile": {
@@ -118,12 +116,13 @@
     "save": "Uložit",
     "language": "Jazyk",
     "chooseLanguage": "Vyberte jazyk",
-    "unnamed": "Uživatel bez jména"
-    ,
+    "unnamed": "Uživatel bez jména",
     "logoutConfirmTitle": "Odhlásit se",
-    "logoutConfirmMessage": "Opravdu se chcete odhlásit?"
-  }
-  ,
+    "logoutConfirmMessage": "Opravdu se chcete odhlásit?",
+    "changePhoto": "Změnit fotku",
+    "notSpecified": "Nespecifikováno",
+    "name": "Jméno"
+  },
   "navigation": {
     "reports": "Hlášení",
     "create": "Vytvořit",

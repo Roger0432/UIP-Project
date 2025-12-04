@@ -1,6 +1,7 @@
 {
-  "app": { "name": "SmartCity" },
-
+  "app": {
+    "name": "SmartCity"
+  },
   "auth": {
     "login": "Anmelden",
     "loggingIn": "Anmeldung läuft...",
@@ -18,7 +19,6 @@
     "or": "oder",
     "loginHere": "Hier anmelden"
   },
-
   "register": {
     "title": "Erstellen Sie Ihr Konto",
     "fullName": "Vollständiger Name",
@@ -37,7 +37,6 @@
       "passwordsMismatch": "Passwörter stimmen nicht überein"
     }
   },
-
   "reports": {
     "searchPlaceholder": "Berichte durchsuchen...",
     "noReports": "Keine Berichte gefunden",
@@ -58,7 +57,6 @@
     "deleteConfirm": "Löschen",
     "deleteError": "Bericht konnte nicht gelöscht werden. Bitte versuchen Sie es erneut."
   },
-
   "reportCard": {
     "waiting": "Warten auf Annahme",
     "in_progress": "In Bearbeitung",
@@ -69,7 +67,6 @@
     "unhide": "Anzeigen",
     "delete": "Löschen"
   },
-
   "reportDetail": {
     "description": "Beschreibung",
     "dateTime": "Datum und Uhrzeit",
@@ -86,7 +83,6 @@
     "callReporter": "Melder anrufen",
     "emailReporter": "E-Mail an Melder senden"
   },
-
   "createReport": {
     "permissionTitle": "Berechtigung erforderlich",
     "permissionPhotos": "Galerien-Berechtigung erforderlich!",
@@ -107,7 +103,6 @@
     "failedCreate": "Bericht konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
     "ok": "OK"
   },
-
   "profile": {
     "phone": "Telefon",
     "mail": "E-Mail",
@@ -123,9 +118,11 @@
     "chooseLanguage": "Sprache wählen",
     "unnamed": "Benutzer ohne Namen",
     "logoutConfirmTitle": "Abmelden",
-    "logoutConfirmMessage": "Sind Sie sicher, dass Sie sich abmelden möchten?"
+    "logoutConfirmMessage": "Sind Sie sicher, dass Sie sich abmelden möchten?",
+    "changePhoto": "Foto ändern",
+    "notSpecified": "Nicht angegeben",
+    "name": "Name"
   },
-
   "navigation": {
     "reports": "Berichte",
     "create": "Erstellen",

@@ -1,6 +1,7 @@
 {
-  "app": { "name": "SmartCity" },
-
+  "app": {
+    "name": "SmartCity"
+  },
   "auth": {
     "login": "Login",
     "loggingIn": "Logging in...",
@@ -18,7 +19,6 @@
     "or": "or",
     "loginHere": "Login here"
   },
-
   "register": {
     "title": "Create your account",
     "fullName": "Full Name",
@@ -37,7 +37,6 @@
       "passwordsMismatch": "Passwords do not match"
     }
   },
-
   "reports": {
     "searchPlaceholder": "Search reports...",
     "noReports": "No reports found",
@@ -58,7 +57,6 @@
     "deleteConfirm": "Delete",
     "deleteError": "Failed to delete report. Please try again."
   },
-
   "reportCard": {
     "waiting": "Waiting to be accepted",
     "in_progress": "In progress",
@@ -69,7 +67,6 @@
     "unhide": "Unhide",
     "delete": "Delete"
   },
-
   "reportDetail": {
     "description": "Description",
     "dateTime": "Date & Time",
@@ -86,7 +83,6 @@
     "callReporter": "Call reporter",
     "emailReporter": "Email reporter"
   },
-
   "createReport": {
     "permissionTitle": "Permission needed",
     "permissionPhotos": "Camera roll permissions are required!",
@@ -107,7 +103,6 @@
     "failedCreate": "Failed to create report. Please try again.",
     "ok": "OK"
   },
-
   "profile": {
     "phone": "Phone",
     "mail": "Mail",
@@ -123,9 +118,11 @@
     "chooseLanguage": "Choose language",
     "unnamed": "Unnamed user",
     "logoutConfirmTitle": "Logout",
-    "logoutConfirmMessage": "Are you sure you want to logout?"
-  }
-  ,
+    "logoutConfirmMessage": "Are you sure you want to logout?",
+    "changePhoto": "Change Photo",
+    "notSpecified": "Not specified",
+    "name": "Name"
+  },
   "navigation": {
     "reports": "Reports",
     "create": "Create",
