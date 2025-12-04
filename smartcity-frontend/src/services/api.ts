@@ -2,8 +2,8 @@ import axios from 'axios';
 import { Incident, CreateIncidentData } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-//const API_BASE_URL = 'http://10.0.17.125:5000'; //arnau
-const API_BASE_URL = 'http://10.0.17.180:5000'; //roger
+const API_BASE_URL = 'http://10.0.17.125:5000'; //arnau
+//const API_BASE_URL = 'http://10.0.17.180:5000'; //roger
 
 console.log('🌐 API conectando a:', API_BASE_URL);
 
@@ -108,16 +108,35 @@ export const profilesAPI = {
     // Get user profile. userId is a string or uuid
     getProfile: async (userId: string) => {
         const response = await api.get(`/api/profile/${userId}`);
-        console.log('Profile:', response.data);
+        console.log('👤 Profile loaded:', {
+            id: response.data.id,
+            name: response.data.name,
+            image: response.data.image ? `${response.data.image.substring(0, 50)}...` : 'null',
+            role: response.data.role
+        });
         return response.data;
     },
 
-    // Update or create user profile
-    updateProfile: async (userId: string, data: { name?: string; email?: string; phone?: string; role?: string }) => {
+    // Update or create user profile (AHORA con IMAGE)
+    updateProfile: async (userId: string, data: {
+        name?: string;
+        email?: string;
+        phone?: string;
+        role?: string;
+        image?: string;  // ✅ AGREGADO image
+    }) => {
+        console.log('📤 Updating profile:', {
+            userId,
+            ...data,
+            image: data.image ? `${data.image.substring(0, 50)}...` : undefined
+        });
+
         const response = await api.put(`/api/profile/${userId}`, data);
+        console.log('✅ Profile updated:', response.data);
         return response.data;
     },
 };
+
 
 export const authAPI = {
     // Register new user

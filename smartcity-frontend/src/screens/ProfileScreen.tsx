@@ -14,6 +14,7 @@ import {
     IconButton,
     RadioButton,
 } from 'react-native-paper';
+import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import { useUser } from '../context/UserContext';
@@ -40,6 +41,60 @@ export default function ProfileScreen({ navigation }: any) {
     ];
 
     const [langDialogVisible, setLangDialogVisible] = React.useState(false);
+    const [profile, setProfile] = React.useState<{
+        id: string;
+        name: string;
+        phone: string;
+        email: string;
+        role: string;
+        image: string;
+        createdAt: string;
+        updatedAt: string;
+    } | null>(null);
+    const [loading, setLoading] = React.useState<boolean>(true);
+    const [updating, setUpdating] = React.useState<boolean>(false);
+    const [userId, setUserId] = React.useState<string | null>(null);
+    const [editVisible, setEditVisible] = React.useState(false);
+    const [tempProfile, setTempProfile] = React.useState({
+        name: '',
+        phone: '',
+        email: '',
+        image: '',
+    });
+    const [imageUri, setImageUri] = React.useState<string | null>(null);
+
+    // Función para subir foto a Cloudinary
+    const uploadPhotoAsync = async (uri: string): Promise<string> => {
+        const cloudName = 'dt2bsrv1r';
+        const uploadPreset = 'UIDProject';
+
+        const formData = new FormData();
+        formData.append('file', {
+            uri,
+            name: 'photo.jpg',
+            type: 'image/jpeg',
+        } as any);
+        formData.append('upload_preset', uploadPreset);
+
+        const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
+            {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error?.message || 'Upload failed');
+        }
+
+        return data.secure_url;
+    };
 
     const changeLanguage = async (lng: string) => {
         try {
@@ -50,33 +105,64 @@ export default function ProfileScreen({ navigation }: any) {
         setLangDialogVisible(false);
     };
 
-    const [profile, setProfile] = React.useState<{ name: string; phone: string; email: string }>({
-        name: '',
-        phone: '',
-        email: '',
-    });
-    const [loading, setLoading] = React.useState<boolean>(true);
-    const [userId, setUserId] = React.useState<string | null>(null);
-    const [editVisible, setEditVisible] = React.useState(false);
-    const [tempProfile, setTempProfile] = React.useState(profile);
+    const pickImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.8,
+        });
+
+        if (!result.canceled) {
+            setImageUri(result.assets[0].uri);
+        }
+    };
 
     const openEdit = () => {
-        setTempProfile(profile);
+        if (profile) {
+            setTempProfile({
+                name: profile.name,
+                phone: profile.phone || '',
+                email: profile.email,
+                image: profile.image || '',
+            });
+            setImageUri(profile.image);
+        }
         setEditVisible(true);
     };
 
     const saveEdit = async () => {
         try {
             if (!userId) return;
-            const payload = { name: tempProfile.name, phone: tempProfile.phone, email: tempProfile.email };
-            setLoading(true);
+
+            setUpdating(true);
+
+            let newImageUrl = tempProfile.image;
+            if (imageUri && imageUri !== profile?.image) {
+                newImageUrl = await uploadPhotoAsync(imageUri);
+            }
+
+            const payload: any = {};
+            if (tempProfile.name !== profile?.name) payload.name = tempProfile.name;
+            if (tempProfile.phone !== profile?.phone) payload.phone = tempProfile.phone;
+            if (tempProfile.email !== profile?.email) payload.email = tempProfile.email;
+            if (newImageUrl !== profile?.image) payload.image = newImageUrl;
+
+            if (Object.keys(payload).length === 0) {
+                Alert.alert('Info', 'No hay cambios para guardar');
+                setEditVisible(false);
+                return;
+            }
+
             const saved = await profilesAPI.updateProfile(userId, payload);
-            setProfile({ name: saved.name ?? '', phone: saved.phone ?? '', email: saved.email ?? '' });
+            setProfile(saved);
             setEditVisible(false);
-        } catch (err) {
+            Alert.alert('Éxito', 'Perfil actualizado correctamente');
+        } catch (err: any) {
             console.error('Error saving profile', err);
+            Alert.alert('Error', err.message || 'Error al actualizar perfil');
         } finally {
-            setLoading(false);
+            setUpdating(false);
         }
     };
 
@@ -96,7 +182,6 @@ export default function ProfileScreen({ navigation }: any) {
 
     const handleLogout = async () => {
         console.log('ProfileScreen: handleLogout pressed');
-        // On web Alert.alert may not show a dialog; call logout immediately there.
         if (Platform.OS === 'web') {
             console.log('ProfileScreen: running on web - calling logout() directly');
             try {
@@ -124,7 +209,6 @@ export default function ProfileScreen({ navigation }: any) {
                     } catch (e) {
                         console.error('ProfileScreen: logout error', e);
                     }
-                    // Navigation will be handled automatically by RootNavigator
                 },
                 style: 'destructive',
             },
@@ -132,28 +216,23 @@ export default function ProfileScreen({ navigation }: any) {
     };
 
     React.useEffect(() => {
-        // Ensure we have a userId stored, otherwise create one
         const init = async () => {
             try {
                 let id = user?.id || (await AsyncStorage.getItem('app_user_id'));
                 if (!id) {
-                    // Create a simple ID - for production use UUID
                     id = `user-${Date.now()}`;
                     await AsyncStorage.setItem('app_user_id', id);
                 }
                 setUserId(id);
 
-                // Fetch profile from backend
                 try {
                     setLoading(true);
                     const data = await profilesAPI.getProfile(id);
-                    setProfile({ name: data.name || '', phone: data.phone || '', email: data.email || '' });
-                    // Sync worker role with UserContext
+                    setProfile(data);
                     if (data.role) setIsWorker(data.role === 'worker');
                 } catch (fetchErr: any) {
-                    // If 404 user not found, keep empty profile so user can create
                     if (fetchErr?.response?.status === 404) {
-                        setProfile({ name: '', phone: '', email: '' });
+                        setProfile(null);
                     } else {
                         console.error('Fetch profile error', fetchErr);
                     }
@@ -168,23 +247,30 @@ export default function ProfileScreen({ navigation }: any) {
         init();
     }, []);
 
+    if (loading) {
+        return (
+            <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+                <View style={styles.content}>
+                    <ActivityIndicator size="large" color={theme.colors.primary} />
+                </View>
+            </View>
+        );
+    }
+
     return (
         <>
             <ScrollView
                 style={[styles.container, { backgroundColor: theme.colors.background }]}
                 contentContainerStyle={styles.content}
             >
-                {loading && (
-                    <View style={{ alignItems: 'center', paddingTop: 20 }}>
-                        <ActivityIndicator size="large" color={theme.colors.primary} />
-                    </View>
-                )}
                 {/* Header */}
                 <View style={styles.profileHeader}>
                     <View style={styles.avatarContainer}>
                         <Avatar.Image
                             size={120}
-                            source={{ uri: 'https://i.pravatar.cc/300?img=12' }}
+                            source={{
+                                uri: imageUri || profile?.image || 'https://i.pravatar.cc/300?img=12'
+                            }}
                         />
                         <IconButton
                             icon="pencil-circle"
@@ -195,21 +281,21 @@ export default function ProfileScreen({ navigation }: any) {
                         />
                     </View>
                     <Text variant="headlineSmall" style={styles.profileName}>
-                        {profile.name || t('profile.unnamed')}
+                        {profile?.name || t('profile.unnamed')}
                     </Text>
                 </View>
 
                 <View style={styles.section}>
                     <List.Item
                         title={t('profile.phone')}
-                        description={profile.phone}
+                        description={profile?.phone || t('profile.notSpecified')}
                         left={(props) => <List.Icon {...props} icon="phone" />}
                         style={styles.listItem}
                     />
                     <Divider />
                     <List.Item
                         title={t('profile.mail')}
-                        description={profile.email}
+                        description={profile?.email || t('profile.notSpecified')}
                         left={(props) => <List.Icon {...props} icon="email" />}
                         style={styles.listItem}
                     />
@@ -234,7 +320,7 @@ export default function ProfileScreen({ navigation }: any) {
                         description={t('profile.workerModeDesc')}
                         left={(props) => <List.Icon {...props} icon="account-hard-hat" />}
                         right={() => (
-                            <Switch value={isWorker} onValueChange={toggleWorkerStatus} />
+                            <Switch value={isWorker} onValueChange={toggleWorkerStatus} disabled={updating} />
                         )}
                         style={styles.listItem}
                     />
@@ -269,17 +355,34 @@ export default function ProfileScreen({ navigation }: any) {
 
             <Portal>
                 <Dialog visible={editVisible} onDismiss={() => setEditVisible(false)}>
-                    <Dialog.Title>Edit Profile</Dialog.Title>
+                    <Dialog.Title>{t('profile.editProfile')}</Dialog.Title>
                     <Dialog.Content>
+                        {/* Photo preview in dialog */}
+                        <View style={styles.photoPreviewContainer}>
+                            <Avatar.Image
+                                size={80}
+                                source={{ uri: imageUri || tempProfile.image || 'https://i.pravatar.cc/300?img=12' }}
+                            />
+                            <Button
+                                icon="camera"
+                                mode="outlined"
+                                onPress={pickImage}
+                                style={styles.changePhotoButton}
+                                loading={updating}
+                            >
+                                {t('profile.changePhoto')}
+                            </Button>
+                        </View>
+
                         <TextInput
-                            label="Name"
+                            label={t('profile.name')}
                             value={tempProfile.name}
                             onChangeText={(text) => setTempProfile({ ...tempProfile, name: text })}
                             style={styles.input}
                             mode="outlined"
                         />
                         <TextInput
-                            label="Phone"
+                            label={t('profile.phone')}
                             value={tempProfile.phone}
                             onChangeText={(text) => setTempProfile({ ...tempProfile, phone: text })}
                             style={styles.input}
@@ -287,7 +390,7 @@ export default function ProfileScreen({ navigation }: any) {
                             keyboardType="phone-pad"
                         />
                         <TextInput
-                            label="Email"
+                            label={t('profile.mail')}
                             value={tempProfile.email}
                             onChangeText={(text) => setTempProfile({ ...tempProfile, email: text })}
                             style={styles.input}
@@ -297,8 +400,17 @@ export default function ProfileScreen({ navigation }: any) {
                         />
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => setEditVisible(false)}>{t('profile.cancel')}</Button>
-                        <Button onPress={saveEdit}>{t('profile.save')}</Button>
+                        <Button onPress={() => setEditVisible(false)} disabled={updating}>
+                            {t('profile.cancel')}
+                        </Button>
+                        <Button
+                            onPress={saveEdit}
+                            mode="contained"
+                            loading={updating}
+                            disabled={updating}
+                        >
+                            {t('profile.save')}
+                        </Button>
                     </Dialog.Actions>
                 </Dialog>
 
@@ -369,5 +481,12 @@ const styles = StyleSheet.create({
     },
     radioItem: {
         paddingVertical: 0,
+    },
+    photoPreviewContainer: {
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    changePhotoButton: {
+        marginTop: 8,
     },
 });
