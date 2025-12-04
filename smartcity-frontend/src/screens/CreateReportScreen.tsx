@@ -14,6 +14,7 @@ import {
     Text,
     IconButton,
 } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
@@ -23,6 +24,7 @@ import { ActivityIndicator } from 'react-native';
 
 export default function CreateReportScreen({ navigation }: any) {
     const theme = useTheme();
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -41,7 +43,7 @@ export default function CreateReportScreen({ navigation }: any) {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
         if (status !== 'granted') {
-            Alert.alert('Permission needed', 'Camera roll permissions are required!');
+            Alert.alert(t('createReport.permissionTitle'), t('createReport.permissionPhotos'));
             return;
         }
 
@@ -61,7 +63,7 @@ export default function CreateReportScreen({ navigation }: any) {
         const { status } = await Location.requestForegroundPermissionsAsync();
 
         if (status !== 'granted') {
-            Alert.alert('Permission needed', 'Location permissions are required!');
+            Alert.alert(t('createReport.permissionTitle'), t('createReport.permissionLocation'));
             return;
         }
 
@@ -108,7 +110,7 @@ export default function CreateReportScreen({ navigation }: any) {
 
     const handleSubmit = async () => {
         if (!formData.title || !formData.description || !formData.location) {
-            Alert.alert('Error', 'Please fill in all required fields');
+            Alert.alert(t('createReport.error'), t('createReport.fillRequired'));
             return;
         }
 
@@ -146,9 +148,9 @@ export default function CreateReportScreen({ navigation }: any) {
                 photos: uploadedPhotoUrls,
             });
 
-            Alert.alert('Success', 'Report created successfully!', [
+            Alert.alert(t('createReport.successTitle'), t('createReport.successMessage'), [
                 {
-                    text: 'OK',
+                    text: t('createReport.ok'),
                     onPress: () => {
                         setFormData({
                             ...formData,
@@ -163,7 +165,7 @@ export default function CreateReportScreen({ navigation }: any) {
             ]);
         } catch (error) {
             console.error('Error creating report:', error);
-            Alert.alert('Error', 'Failed to create report. Please try again.');
+            Alert.alert(t('createReport.error'), t('createReport.failedCreate'));
         } finally {
             setLoading(false);
         }
@@ -217,14 +219,14 @@ export default function CreateReportScreen({ navigation }: any) {
 
             <View style={styles.row}>
                 <TextInput
-                    label="Name"
+                    label={t('createReport.name')}
                     value={formData.reporter}
                     onChangeText={(text) => setFormData({ ...formData, reporter: text })}
                     style={[styles.input, styles.halfInput]}
                     mode="outlined"
                 />
                 <TextInput
-                    label="Phone number"
+                    label={t('createReport.phone')}
                     value={formData.phone}
                     onChangeText={(text) => setFormData({ ...formData, phone: text })}
                     style={[styles.input, styles.halfInput]}
@@ -234,7 +236,7 @@ export default function CreateReportScreen({ navigation }: any) {
             </View>
 
             <TextInput
-                label="Mail"
+                label={t('createReport.mail')}
                 value={formData.email}
                 onChangeText={(text) => setFormData({ ...formData, email: text })}
                 style={styles.input}
@@ -243,7 +245,7 @@ export default function CreateReportScreen({ navigation }: any) {
             />
 
             <TextInput
-                label="Title of the incidence"
+                label={t('createReport.title')}
                 value={formData.title}
                 onChangeText={(text) => setFormData({ ...formData, title: text })}
                 style={styles.input}
@@ -251,7 +253,7 @@ export default function CreateReportScreen({ navigation }: any) {
             />
 
             <TextInput
-                label="Description"
+                label={t('createReport.description')}
                 value={formData.description}
                 onChangeText={(text) => setFormData({ ...formData, description: text })}
                 mode="outlined"
@@ -262,7 +264,7 @@ export default function CreateReportScreen({ navigation }: any) {
 
             <View style={styles.locationContainer}>
                 <TextInput
-                    label="Location"
+                    label={t('createReport.location')}
                     value={formData.location}
                     onChangeText={(text) => setFormData({ ...formData, location: text })}
                     style={[styles.input, styles.locationInput]}
@@ -275,13 +277,13 @@ export default function CreateReportScreen({ navigation }: any) {
                     icon="map-marker"
                     buttonColor={theme.colors.onSurface}
                 >
-                    Select your location
+                    {t('createReport.selectLocation')}
                 </Button>
             </View>
 
             <View style={styles.photosContainer}>
                 <Text variant="titleSmall" style={styles.photosLabel}>
-                    Photos
+                    {t('createReport.photos')}
                 </Text>
                 <View style={styles.photosGrid}>
                     <TouchableOpacity style={styles.addPhotoButton} onPress={pickImage}>
@@ -308,7 +310,7 @@ export default function CreateReportScreen({ navigation }: any) {
                 disabled={loading}
                 style={styles.submitButton}
             >
-                Create Report
+                {t('createReport.createReport')}
             </Button>
         </ScrollView>
     );

@@ -1,0 +1,127 @@
+{
+  "app": { "name": "SmartCity" },
+  "auth": {
+    "login": "Přihlásit se",
+    "loggingIn": "Přihlašování...",
+    "email": "Email",
+    "password": "Heslo",
+    "loginSubtitle": "Přihlaste se ke svému účtu",
+    "noAccount": "Nemáte účet?",
+    "registerHere": "Zaregistrujte se zde",
+    "errors": {
+      "emailRequired": "Email je povinný",
+      "passwordRequired": "Heslo je povinné",
+      "invalidEmail": "Zadejte platný email",
+      "invalidCredentials": "Nesprávné uživatelské jméno nebo heslo"
+    }
+    ,
+    "or": "nebo",
+    "loginHere": "Přihlásit se zde"
+  },
+  "register": {
+    "title": "Vytvořte si účet",
+    "fullName": "Celé jméno",
+    "email": "Email",
+    "password": "Heslo",
+    "confirmPassword": "Potvrdit heslo",
+    "register": "Registrovat se",
+    "creating": "Vytváření účtu..."
+    ,
+    "alreadyHaveAccount": "Už máte účet?",
+    "errors": {
+      "nameRequired": "Jméno je povinné",
+      "nameMin": "Jméno musí mít alespoň 2 znaky",
+      "passwordMin": "Heslo musí mít alespoň 8 znaků",
+      "passwordComplexity": "Minimálně 1 velké písmeno, 1 malé písmeno a 1 číslo",
+      "confirmRequired": "Musíte potvrdit heslo",
+      "passwordsMismatch": "Hesla se neshodují"
+    }
+  },
+  "reports": {
+    "searchPlaceholder": "Hledat hlášení...",
+    "noReports": "Nenalezena žádná hlášení",
+    "tryAdjust": "Zkuste upravit filtry",
+    "noAvailable": "Žádná hlášení k dispozici",
+    "filters": {
+      "all": "Vše",
+      "waiting": "Čeká",
+      "accepted": "Přijato",
+      "in_progress": "Probíhá",
+      "finished": "Dokončeno",
+      "denied": "Zamítnuto",
+      "hidden": "Skryté"
+    }
+    ,
+    "deleteTitle": "Smazat hlášení",
+    "deleteConfirmMessage": "Opravdu chcete toto hlášení smazat? Tuto akci nelze vrátit zpět.",
+    "deleteCancel": "Zrušit",
+    "deleteConfirm": "Smazat",
+    "deleteError": "Nepodařilo se smazat hlášení. Zkuste to prosím znovu."
+  },
+  "reportCard": {
+    "waiting": "Čeká na přijetí",
+    "in_progress": "Probíhá",
+    "accepted": "Přijato",
+    "denied": "Zamítnuto",
+    "finished": "Dokončeno",
+    "hide": "Skrýt",
+    "unhide": "Zobrazit",
+    "delete": "Smazat"
+  },
+  "reportDetail": {
+    "description": "Popis",
+    "dateTime": "Datum a čas",
+    "location": "Umístění",
+    "reportedBy": "Nahlásil",
+    "accept": "Přijmout",
+    "deny": "Zamítnout",
+    "markInProgress": "Označit jako probíhající",
+    "markFinished": "Označit jako dokončené"
+  },
+  "createReport": {
+    "permissionTitle": "Požadováno oprávnění",
+    "permissionPhotos": "Je vyžadováno oprávnění ke galerii!",
+    "permissionLocation": "Je vyžadováno oprávnění k poloze!",
+    "name": "Jméno",
+    "phone": "Telefonní číslo",
+    "mail": "Email",
+    "title": "Název události",
+    "description": "Popis",
+    "location": "Umístění",
+    "selectLocation": "Vyberte svou polohu",
+    "photos": "Fotky",
+    "createReport": "Vytvořit hlášení",
+    "successTitle": "Hotovo",
+    "successMessage": "Hlášení bylo úspěšně vytvořeno!",
+    "error": "Chyba",
+    "fillRequired": "Vyplňte všechna povinná pole",
+    "failedCreate": "Nepodařilo se vytvořit hlášení. Zkuste to prosím znovu."
+    ,
+    "ok": "OK"
+  },
+  "profile": {
+    "phone": "Telefon",
+    "mail": "Email",
+    "darkMode": "Tmavý režim",
+    "darkModeDesc": "Vyberte téma",
+    "workerMode": "Režim pracovníka",
+    "workerModeDesc": "Povolte, pokud jste zaměstnanec města",
+    "logout": "Odhlásit se",
+    "editProfile": "Upravit profil",
+    "cancel": "Zrušit",
+    "save": "Uložit",
+    "language": "Jazyk",
+    "chooseLanguage": "Vyberte jazyk",
+    "unnamed": "Uživatel bez jména"
+    ,
+    "logoutConfirmTitle": "Odhlásit se",
+    "logoutConfirmMessage": "Opravdu se chcete odhlásit?"
+  }
+  ,
+  "navigation": {
+    "reports": "Hlášení",
+    "create": "Vytvořit",
+    "createReport": "Vytvořit hlášení",
+    "profile": "Profil"
+  }
+}

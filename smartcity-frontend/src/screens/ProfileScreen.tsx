@@ -13,6 +13,8 @@ import {
     Button,
     IconButton,
 } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 import { useUser } from '../context/UserContext';
 import { useAppTheme } from '../context/ThemeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -22,6 +24,18 @@ export default function ProfileScreen({ navigation }: any) {
     const theme = useTheme();
     const { isWorker, setIsWorker, user, logout } = useUser();
     const { isDark, setThemeMode } = useAppTheme();
+    const { t } = useTranslation();
+
+    const [langDialogVisible, setLangDialogVisible] = React.useState(false);
+
+    const changeLanguage = async (lng: string) => {
+        try {
+            await i18n.changeLanguage(lng);
+        } catch (e) {
+            console.error('Language change error', e);
+        }
+        setLangDialogVisible(false);
+    };
 
     const [profile, setProfile] = React.useState<{ name: string; phone: string; email: string }>({
         name: 'Joel',
@@ -69,8 +83,6 @@ export default function ProfileScreen({ navigation }: any) {
 
     const handleLogout = async () => {
         console.log('ProfileScreen: handleLogout pressed');
-        // Quick debug alert to confirm the press handler runs on the device/emulator
-        Alert.alert('Debug', 'Logout pressed (debug)');
         // On web Alert.alert may not show a dialog; call logout immediately there.
         if (Platform.OS === 'web') {
             console.log('ProfileScreen: running on web - calling logout() directly');
@@ -83,10 +95,14 @@ export default function ProfileScreen({ navigation }: any) {
             return;
         }
 
-        Alert.alert('Logout', 'Are you sure you want to logout?', [
-            { text: 'Cancel', onPress: () => { console.log('ProfileScreen: logout cancelled'); }, style: 'cancel' },
+        Alert.alert(t('profile.logoutConfirmTitle'), t('profile.logoutConfirmMessage'), [
             {
-                text: 'Logout',
+                text: t('profile.cancel'),
+                onPress: () => { console.log('ProfileScreen: logout cancelled'); },
+                style: 'cancel',
+            },
+            {
+                text: t('profile.logout'),
                 onPress: async () => {
                     console.log('ProfileScreen: logout confirmed - calling logout()');
                     try {
@@ -166,28 +182,28 @@ export default function ProfileScreen({ navigation }: any) {
                         />
                     </View>
                     <Text variant="headlineSmall" style={styles.profileName}>
-                        {profile.name || 'Unnamed user'}
+                        {profile.name || t('profile.unnamed')}
                     </Text>
                 </View>
 
                 <View style={styles.section}>
                     <List.Item
-                        title="Phone"
+                        title={t('profile.phone')}
                         description={profile.phone}
                         left={(props) => <List.Icon {...props} icon="phone" />}
                         style={styles.listItem}
                     />
                     <Divider />
                     <List.Item
-                        title="Mail"
+                        title={t('profile.mail')}
                         description={profile.email}
                         left={(props) => <List.Icon {...props} icon="email" />}
                         style={styles.listItem}
                     />
                     <Divider />
                     <List.Item
-                        title="Dark Mode"
-                        description="Choose your theme"
+                        title={t('profile.darkMode')}
+                        description={t('profile.darkModeDesc')}
                         left={(props) => (
                             <List.Icon {...props} icon={isDark ? 'weather-night' : 'white-balance-sunny'} />
                         )}
@@ -201,8 +217,8 @@ export default function ProfileScreen({ navigation }: any) {
                     />
                     <Divider />
                     <List.Item
-                        title="Worker mode"
-                        description="Enable if you are a city worker"
+                        title={t('profile.workerMode')}
+                        description={t('profile.workerModeDesc')}
                         left={(props) => <List.Icon {...props} icon="account-hard-hat" />}
                         right={() => (
                             <Switch value={isWorker} onValueChange={toggleWorkerStatus} />
@@ -211,7 +227,18 @@ export default function ProfileScreen({ navigation }: any) {
                     />
                     <Divider />
                     <List.Item
-                        title="Logout"
+                        title={t('profile.language')}
+                        description={i18n.language}
+                        left={(props) => <List.Icon {...props} icon="translate" />}
+                        right={() => (
+                            <IconButton icon="chevron-right" onPress={() => setLangDialogVisible(true)} />
+                        )}
+                        onPress={() => setLangDialogVisible(true)}
+                        style={styles.listItem}
+                    />
+                    <Divider />
+                    <List.Item
+                        title={t('profile.logout')}
                         left={(props) => <List.Icon {...props} icon="logout" />}
                         right={() => (
                             <IconButton
@@ -257,8 +284,20 @@ export default function ProfileScreen({ navigation }: any) {
                         />
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => setEditVisible(false)}>Cancel</Button>
-                        <Button onPress={saveEdit}>Save</Button>
+                        <Button onPress={() => setEditVisible(false)}>{t('profile.cancel')}</Button>
+                        <Button onPress={saveEdit}>{t('profile.save')}</Button>
+                    </Dialog.Actions>
+                </Dialog>
+
+                <Dialog visible={langDialogVisible} onDismiss={() => setLangDialogVisible(false)}>
+                    <Dialog.Title>{t('profile.chooseLanguage')}</Dialog.Title>
+                    <Dialog.Content>
+                        <List.Item title="English" onPress={() => changeLanguage('en')} />
+                        <List.Item title="Español" onPress={() => changeLanguage('es')} />
+                        <List.Item title="Čeština" onPress={() => changeLanguage('cs')} />
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setLangDialogVisible(false)}>{t('profile.cancel')}</Button>
                     </Dialog.Actions>
                 </Dialog>
             </Portal>

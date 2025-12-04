@@ -1,0 +1,129 @@
+{
+  "app": { "name": "SmartCity" },
+
+  "auth": {
+    "login": "Login",
+    "loggingIn": "Logging in...",
+    "email": "Email",
+    "password": "Password",
+    "loginSubtitle": "Login to your account",
+    "noAccount": "Don't have an account?",
+    "registerHere": "Register here",
+    "errors": {
+      "emailRequired": "Email is required",
+      "passwordRequired": "Password is required",
+      "invalidEmail": "Please enter a valid email",
+      "invalidCredentials": "Incorrect username or password"
+    },
+    "or": "or",
+    "loginHere": "Login here"
+  },
+
+  "register": {
+    "title": "Create your account",
+    "fullName": "Full Name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "register": "Register",
+    "creating": "Creating account...",
+    "alreadyHaveAccount": "Already have an account?",
+    "errors": {
+      "nameRequired": "Name is required",
+      "nameMin": "Name must have at least 2 characters",
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordComplexity": "Minimum 1 uppercase, 1 lowercase and 1 number",
+      "confirmRequired": "You must confirm the password",
+      "passwordsMismatch": "Passwords do not match"
+    }
+  },
+
+  "reports": {
+    "searchPlaceholder": "Search reports...",
+    "noReports": "No reports found",
+    "tryAdjust": "Try adjusting your filters",
+    "noAvailable": "No reports available",
+    "filters": {
+      "all": "All",
+      "waiting": "Waiting",
+      "accepted": "Accepted",
+      "in_progress": "In Progress",
+      "finished": "Finished",
+      "denied": "Denied",
+      "hidden": "Hidden"
+    },
+    "deleteTitle": "Delete Report",
+    "deleteConfirmMessage": "Are you sure you want to delete this report? This action cannot be undone.",
+    "deleteCancel": "Cancel",
+    "deleteConfirm": "Delete",
+    "deleteError": "Failed to delete report. Please try again."
+  },
+
+  "reportCard": {
+    "waiting": "Waiting to be accepted",
+    "in_progress": "In progress",
+    "accepted": "Accepted",
+    "denied": "Denied",
+    "finished": "Finished",
+    "hide": "Hide",
+    "unhide": "Unhide",
+    "delete": "Delete"
+  },
+
+  "reportDetail": {
+    "description": "Description",
+    "dateTime": "Date & Time",
+    "location": "Location",
+    "reportedBy": "Reported by",
+    "accept": "Accept",
+    "deny": "Deny",
+    "markInProgress": "Mark in progress",
+    "markFinished": "Mark finished"
+  },
+
+  "createReport": {
+    "permissionTitle": "Permission needed",
+    "permissionPhotos": "Camera roll permissions are required!",
+    "permissionLocation": "Location permissions are required!",
+    "name": "Name",
+    "phone": "Phone number",
+    "mail": "Mail",
+    "title": "Title of the incident",
+    "description": "Description",
+    "location": "Location",
+    "selectLocation": "Select your location",
+    "photos": "Photos",
+    "createReport": "Create Report",
+    "successTitle": "Success",
+    "successMessage": "Report created successfully!",
+    "error": "Error",
+    "fillRequired": "Please fill in all required fields",
+    "failedCreate": "Failed to create report. Please try again.",
+    "ok": "OK"
+  },
+
+  "profile": {
+    "phone": "Phone",
+    "mail": "Mail",
+    "darkMode": "Dark Mode",
+    "darkModeDesc": "Choose your theme",
+    "workerMode": "Worker mode",
+    "workerModeDesc": "Enable if you are a city worker",
+    "logout": "Logout",
+    "editProfile": "Edit Profile",
+    "cancel": "Cancel",
+    "save": "Save",
+    "language": "Language",
+    "chooseLanguage": "Choose language",
+    "unnamed": "Unnamed user",
+    "logoutConfirmTitle": "Logout",
+    "logoutConfirmMessage": "Are you sure you want to logout?"
+  }
+  ,
+  "navigation": {
+    "reports": "Reports",
+    "create": "Create",
+    "createReport": "Create a report",
+    "profile": "Profile"
+  }
+}

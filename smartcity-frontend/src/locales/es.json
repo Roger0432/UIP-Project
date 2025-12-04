@@ -1,0 +1,122 @@
+{
+  "app": { "name": "SmartCity" },
+  "auth": {
+    "login": "Iniciar sesión",
+    "loggingIn": "Iniciando sesión...",
+    "email": "Correo",
+    "password": "Contraseña",
+    "loginSubtitle": "Inicia sesión en tu cuenta",
+    "noAccount": "¿No tienes una cuenta?",
+    "registerHere": "Regístrate aquí",
+    "errors": {
+      "emailRequired": "El correo es obligatorio",
+      "passwordRequired": "La contraseña es obligatoria",
+      "invalidEmail": "Introduce un correo válido",
+      "invalidCredentials": "Usuario o contraseña incorrectos"
+    },
+    "or": "o",
+    "loginHere": "Inicia sesión aquí"
+  },
+  "register": {
+    "title": "Crea tu cuenta",
+    "fullName": "Nombre completo",
+    "email": "Correo",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "register": "Registrarse",
+    "creating": "Creando cuenta...",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "errors": {
+      "nameRequired": "El nombre es obligatorio",
+      "nameMin": "El nombre debe tener al menos 2 caracteres",
+      "passwordMin": "La contraseña debe tener al menos 8 caracteres",
+      "passwordComplexity": "Mínimo 1 mayúscula, 1 minúscula y 1 número",
+      "confirmRequired": "Debes confirmar la contraseña",
+      "passwordsMismatch": "Las contraseñas no coinciden"
+    }
+  },
+  "reports": {
+    "searchPlaceholder": "Buscar informes...",
+    "noReports": "No se encontraron informes",
+    "tryAdjust": "Prueba a ajustar tus filtros",
+    "noAvailable": "No hay informes disponibles",
+    "filters": {
+      "all": "Todos",
+      "waiting": "En espera",
+      "accepted": "Aceptados",
+      "in_progress": "En progreso",
+      "finished": "Finalizados",
+      "denied": "Denegados",
+      "hidden": "Ocultos"
+    },
+    "deleteTitle": "Eliminar informe",
+    "deleteConfirmMessage": "¿Estás seguro de que quieres eliminar este informe? Esta acción no se puede deshacer.",
+    "deleteCancel": "Cancelar",
+    "deleteConfirm": "Eliminar",
+    "deleteError": "Error al eliminar el informe. Inténtalo de nuevo."
+  },
+  "reportCard": {
+    "waiting": "En espera de aceptación",
+    "in_progress": "En progreso",
+    "accepted": "Aceptado",
+    "denied": "Denegado",
+    "finished": "Finalizado",
+    "hide": "Ocultar",
+    "unhide": "Mostrar",
+    "delete": "Eliminar"
+  },
+  "reportDetail": {
+    "description": "Descripción",
+    "dateTime": "Fecha y hora",
+    "location": "Ubicación",
+    "reportedBy": "Reportado por",
+    "accept": "Aceptar",
+    "deny": "Denegar",
+    "markInProgress": "Marcar en progreso",
+    "markFinished": "Marcar finalizado"
+  },
+  "createReport": {
+    "permissionTitle": "Permiso necesario",
+    "permissionPhotos": "¡Se requieren permisos para la galería!",
+    "permissionLocation": "¡Se requieren permisos de ubicación!",
+    "name": "Nombre",
+    "phone": "Número de teléfono",
+    "mail": "Correo",
+    "title": "Título de la incidencia",
+    "description": "Descripción",
+    "location": "Ubicación",
+    "selectLocation": "Selecciona tu ubicación",
+    "photos": "Fotos",
+    "createReport": "Crear informe",
+    "successTitle": "Éxito",
+    "successMessage": "¡Informe creado con éxito!",
+    "error": "Error",
+    "fillRequired": "Por favor completa los campos obligatorios",
+    "failedCreate": "Error al crear el informe. Inténtalo de nuevo.",
+    "ok": "OK"
+  },
+  "profile": {
+    "phone": "Teléfono",
+    "mail": "Correo",
+    "darkMode": "Modo oscuro",
+    "darkModeDesc": "Elige tu tema",
+    "workerMode": "Modo trabajador",
+    "workerModeDesc": "Activa si eres trabajador municipal",
+    "logout": "Cerrar sesión",
+    "editProfile": "Editar perfil",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "language": "Idioma",
+    "chooseLanguage": "Elige idioma",
+    "unnamed": "Usuario sin nombre",
+    "logoutConfirmTitle": "Cerrar sesión",
+    "logoutConfirmMessage": "¿Estás seguro de que quieres cerrar sesión?"
+  }
+  ,
+  "navigation": {
+    "reports": "Informes",
+    "create": "Crear",
+    "createReport": "Crear informe",
+    "profile": "Perfil"
+  }
+}

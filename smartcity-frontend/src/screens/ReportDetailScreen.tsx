@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Image, ScrollView, Linking, Pressable, Modal, Dimensions } from 'react-native';
 import { Text, useTheme, Chip, Button, IconButton, Card, Divider, Avatar } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Incident } from '../types';
 import { incidentsAPI } from '../services/api';
@@ -9,6 +10,7 @@ const { width } = Dimensions.get('window');
 
 export default function ReportDetailScreen({ route, navigation }: any) {
     const theme = useTheme();
+    const { t } = useTranslation();
     const { incident: initialIncident, isWorker } = route.params as {
         incident: Incident;
         isWorker: boolean;
@@ -56,13 +58,13 @@ export default function ReportDetailScreen({ route, navigation }: any) {
         switch (incident.status) {
             case 'waiting':
                 return [
-                    { label: 'Accept', next: 'accepted' as const, icon: 'check', color: '#81C784' },
-                    { label: 'Deny', next: 'denied' as const, icon: 'close', color: '#E57373' },
+                    { label: t('reportDetail.accept'), next: 'accepted' as const, icon: 'check', color: '#81C784' },
+                    { label: t('reportDetail.deny'), next: 'denied' as const, icon: 'close', color: '#E57373' },
                 ];
             case 'accepted':
-                return [{ label: 'Mark in progress', next: 'in_progress' as const, icon: 'progress-clock', color: '#FFB74D' }];
+                return [{ label: t('reportDetail.markInProgress'), next: 'in_progress' as const, icon: 'progress-clock', color: '#FFB74D' }];
             case 'in_progress':
-                return [{ label: 'Mark finished', next: 'finished' as const, icon: 'check-all', color: '#4CAF50' }];
+                return [{ label: t('reportDetail.markFinished'), next: 'finished' as const, icon: 'check-all', color: '#4CAF50' }];
             case 'denied':
             case 'finished':
             default:
@@ -171,7 +173,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
                 {/* Description Card */}
                 <Card style={styles.card}>
                     <Card.Title
-                        title="Description"
+                        title={t('reportDetail.description')}
                         left={(props) => <Avatar.Icon {...props} icon="text-box-outline" style={{ backgroundColor: theme.colors.secondaryContainer }} color={theme.colors.onSecondaryContainer} size={40} />}
                     />
                     <Card.Content>
@@ -189,7 +191,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
                                 <MaterialCommunityIcons name="calendar-clock" size={24} color={theme.colors.onSurfaceVariant} />
                             </View>
                             <View style={styles.detailTextContainer}>
-                                <Text variant="labelMedium" style={styles.detailLabel}>Date & Time</Text>
+                                <Text variant="labelMedium" style={styles.detailLabel}>{t('reportDetail.dateTime')}</Text>
                                 <Text variant="bodyMedium" style={styles.detailValue}>
                                     {formatDate(incident.createdAt)}
                                 </Text>
@@ -203,7 +205,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
                                 <MaterialCommunityIcons name="map-marker" size={24} color={theme.colors.primary} />
                             </View>
                             <View style={styles.detailTextContainer}>
-                                <Text variant="labelMedium" style={styles.detailLabel}>Location</Text>
+                                <Text variant="labelMedium" style={styles.detailLabel}>{t('reportDetail.location')}</Text>
                                 <Text variant="bodyMedium" style={[styles.detailValue, { color: theme.colors.primary }]}>
                                     {incident.location}
                                 </Text>
@@ -218,7 +220,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
                                 <MaterialCommunityIcons name="account" size={24} color={theme.colors.secondary} />
                             </View>
                             <View style={styles.detailTextContainer}>
-                                <Text variant="labelMedium" style={styles.detailLabel}>Reported by</Text>
+                                <Text variant="labelMedium" style={styles.detailLabel}>{t('reportDetail.reportedBy')}</Text>
                                 <Text variant="bodyMedium" style={styles.detailValue}>
                                     {incident.reporter}
                                 </Text>

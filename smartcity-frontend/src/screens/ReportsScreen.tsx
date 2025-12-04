@@ -9,6 +9,7 @@ import {
     Menu,
     Button,
 } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { incidentsAPI } from '../services/api';
@@ -23,6 +24,7 @@ const HIDDEN_KEY = 'hidden_incident_ids';
 
 export default function ReportsScreen({ navigation }: any) {
     const theme = useTheme();
+    const { t } = useTranslation();
     const { isWorker, user } = useUser();
     const [incidents, setIncidents] = useState<Incident[]>([]);
     const [loading, setLoading] = useState(true);
@@ -101,15 +103,15 @@ export default function ReportsScreen({ navigation }: any) {
 
     const handleDeleteIncident = async (id: number) => {
         Alert.alert(
-            'Delete Report',
-            'Are you sure you want to delete this report? This action cannot be undone.',
+            t('reports.deleteTitle'),
+            t('reports.deleteConfirmMessage'),
             [
                 {
-                    text: 'Cancel',
+                    text: t('reports.deleteCancel'),
                     style: 'cancel',
                 },
                 {
-                    text: 'Delete',
+                    text: t('reports.deleteConfirm'),
                     style: 'destructive',
                     onPress: async () => {
                         try {
@@ -117,7 +119,7 @@ export default function ReportsScreen({ navigation }: any) {
                             fetchIncidents();
                         } catch (error) {
                             console.error('Error deleting incident:', error);
-                            Alert.alert('Error', 'Failed to delete report. Please try again.');
+                            Alert.alert(t('createReport.error'), t('reports.deleteError'));
                         }
                     },
                 },
@@ -199,13 +201,13 @@ export default function ReportsScreen({ navigation }: any) {
 
 
     const statusFilters: { key: StatusFilter; label: string; icon: string }[] = [
-        { key: 'all', label: 'All', icon: 'format-list-bulleted' },
-        { key: 'waiting', label: 'Waiting', icon: 'clock-outline' },
-        { key: 'accepted', label: 'Accepted', icon: 'check-circle' },
-        { key: 'in_progress', label: 'In Progress', icon: 'progress-clock' },
-        { key: 'finished', label: 'Finished', icon: 'check-decagram' },
-        { key: 'denied', label: 'Denied', icon: 'close-circle' },
-        { key: 'hidden', label: 'Hidden', icon: 'eye-off' },
+        { key: 'all', label: t('reports.filters.all'), icon: 'format-list-bulleted' },
+        { key: 'waiting', label: t('reports.filters.waiting'), icon: 'clock-outline' },
+        { key: 'accepted', label: t('reports.filters.accepted'), icon: 'check-circle' },
+        { key: 'in_progress', label: t('reports.filters.in_progress'), icon: 'progress-clock' },
+        { key: 'finished', label: t('reports.filters.finished'), icon: 'check-decagram' },
+        { key: 'denied', label: t('reports.filters.denied'), icon: 'close-circle' },
+        { key: 'hidden', label: t('reports.filters.hidden'), icon: 'eye-off' },
     ];
 
     if (loading) {
@@ -224,7 +226,7 @@ export default function ReportsScreen({ navigation }: any) {
 
 
                 <Searchbar
-                    placeholder="Search reports..."
+                    placeholder={t('reports.searchPlaceholder')}
                     onChangeText={setSearchQuery}
                     value={searchQuery}
                     style={styles.searchBar}
@@ -309,15 +311,15 @@ export default function ReportsScreen({ navigation }: any) {
                             variant="titleMedium"
                             style={{ color: theme.colors.onSurfaceVariant, marginBottom: 8 }}
                         >
-                            No reports found
+                            {t('reports.noReports')}
                         </Text>
                         <Text
                             variant="bodyMedium"
                             style={{ color: theme.colors.onSurfaceVariant, textAlign: 'center' }}
                         >
                             {searchQuery || statusFilter !== 'all'
-                                ? 'Try adjusting your filters'
-                                : 'No reports available'}
+                                ? t('reports.tryAdjust')
+                                : t('reports.noAvailable')}
                         </Text>
                     </View>
                 }

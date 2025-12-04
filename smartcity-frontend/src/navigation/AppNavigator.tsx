@@ -3,6 +3,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import ReportsScreen from '../screens/ReportsScreen';
 import CreateReportScreen from '../screens/CreateReportScreen';
@@ -14,6 +15,7 @@ const Tab = createBottomTabNavigator();
 export default function AppNavigator() {
     const theme = useTheme();
     const { isWorker } = useUser();
+    const { t } = useTranslation();
 
     return (
         <Tab.Navigator
@@ -44,8 +46,8 @@ export default function AppNavigator() {
                 name="Reports"
                 component={ReportsScreen}
                 options={{
-                    title: 'Reports',
-                    tabBarLabel: 'Reports',
+                    title: t('navigation.reports'),
+                    tabBarLabel: t('navigation.reports'),
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons
                             name="file-document-multiple"
@@ -61,8 +63,8 @@ export default function AppNavigator() {
                     name="Create a report"
                     component={CreateReportScreen}
                     options={{
-                        title: 'Create a report',
-                        tabBarLabel: 'Create',
+                        title: t('navigation.createReport'),
+                        tabBarLabel: t('navigation.create'),
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons
                                 name="plus-circle"
@@ -78,8 +80,8 @@ export default function AppNavigator() {
                 name="Profile"
                 component={ProfileScreen}
                 options={{
-                    title: 'Profile',
-                    tabBarLabel: 'Profile',
+                    title: t('navigation.profile'),
+                    tabBarLabel: t('navigation.profile'),
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="account" size={size} color={color} />
                     ),

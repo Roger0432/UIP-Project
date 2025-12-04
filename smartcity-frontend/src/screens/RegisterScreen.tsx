@@ -13,11 +13,13 @@ import {
     useTheme,
     Text,
 } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { useUser } from '../context/UserContext';
 import { authAPI } from '../services/api';
 
 export default function RegisterScreen({ navigation }: any) {
     const theme = useTheme();
+    const { t } = useTranslation();
     const { setUser, setToken, setIsAuthenticated } = useUser();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -39,42 +41,42 @@ export default function RegisterScreen({ navigation }: any) {
 
         // Nom obligatori i mínim 2 caràcters
         if (!name.trim()) {
-            setNameError('El nom és obligatori');
+            setNameError(t('register.errors.nameRequired'));
             isValid = false;
         } else if (name.trim().length < 2) {
-            setNameError('El nom ha de tenir almenys 2 caràcters');
+            setNameError(t('register.errors.nameMin'));
             isValid = false;
         }
 
         // Email vàlid
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email) {
-            setEmailError('El correu és obligatori');
+            setEmailError(t('auth.errors.emailRequired'));
             isValid = false;
         } else if (!emailRegex.test(email)) {
-            setEmailError('Introdueix un correu electrònic vàlid');
+            setEmailError(t('auth.errors.invalidEmail'));
             isValid = false;
         }
 
         // Password mínim 8 caràcters, 1 majúscula, 1 minúscula, 1 número
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
         if (!password) {
-            setPasswordError('La contrasenya és obligatòria');
+            setPasswordError(t('auth.errors.passwordRequired'));
             isValid = false;
         } else if (password.length < 8) {
-            setPasswordError('La contrasenya ha de tenir almenys 8 caràcters');
+            setPasswordError(t('register.errors.passwordMin'));
             isValid = false;
         } else if (!passwordRegex.test(password)) {
-            setPasswordError('Mínim 1 majúscula, 1 minúscula i 1 número');
+            setPasswordError(t('register.errors.passwordComplexity'));
             isValid = false;
         }
 
         // Confirmació de password
         if (!confirmPassword) {
-            setConfirmPasswordError('Has de confirmar la contrasenya');
+            setConfirmPasswordError(t('register.errors.confirmRequired'));
             isValid = false;
         } else if (password !== confirmPassword) {
-            setConfirmPasswordError('Les contrasenyes no coincideixen');
+            setConfirmPasswordError(t('register.errors.passwordsMismatch'));
             isValid = false;
         }
 
@@ -108,19 +110,19 @@ export default function RegisterScreen({ navigation }: any) {
                 setPassword('');
                 setConfirmPassword('');
             } else {
-                setFormError(response.message || 'Error en el registre');
+                setFormError(response.message || 'Registration error');
             }
         } catch (error: any) {
             console.error('Register error:', error);
             if (error.response?.status === 409 || error.response?.status === 400) {
                 // Email ja existeix o error de validació
-                setFormError('Aquest correu ja està registrat');
+                setFormError('This email is already registered');
             } else if (error.response?.status === 422) {
-                setFormError('Dades invàlides');
+                setFormError('Invalid data');
             } else {
                 setFormError(
                     error.response?.data?.message ||
-                    'No s’ha pogut crear el compte. Torna-ho a provar.'
+                    'Could not create account. Try again.'
                 );
             }
         } finally {
@@ -138,17 +140,17 @@ export default function RegisterScreen({ navigation }: any) {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.headerContainer}>
-                    <Text style={[styles.title, { color: theme.colors.primary }]}>
-                        SmartCity
+                    <Text style={[styles.title, { color: theme.colors.primary }]}> 
+                        {t('app.name')}
                     </Text>
-                    <Text style={[styles.subtitle, { color: theme.colors.secondary }]}>
-                        Create your account
+                    <Text style={[styles.subtitle, { color: theme.colors.secondary }]}> 
+                        {t('register.title')}
                     </Text>
                 </View>
 
                 <View style={styles.formContainer}>
                     <TextInput
-                        label="Full Name"
+                        label={t('register.fullName')}
                         value={name}
                         onChangeText={(text) => {
                             setName(text);
@@ -165,7 +167,7 @@ export default function RegisterScreen({ navigation }: any) {
                     ) : null}
 
                     <TextInput
-                        label="Email"
+                        label={t('register.email')}
                         value={email}
                         onChangeText={(text) => {
                             setEmail(text);
@@ -184,13 +186,13 @@ export default function RegisterScreen({ navigation }: any) {
                     ) : null}
 
                     <TextInput
-                        label="Password"
+                        label={t('register.password')}
                         value={password}
                         onChangeText={(text) => {
                             setPassword(text);
                             if (passwordError) setPasswordError('');
                             if (confirmPassword && text !== confirmPassword) {
-                                setConfirmPasswordError('Les contrasenyes no coincideixen');
+                                setConfirmPasswordError(t('register.errors.passwordsMismatch'));
                             } else if (confirmPasswordError) {
                                 setConfirmPasswordError('');
                             }
@@ -213,13 +215,13 @@ export default function RegisterScreen({ navigation }: any) {
                     ) : null}
 
                     <TextInput
-                        label="Confirm Password"
+                        label={t('register.confirmPassword')}
                         value={confirmPassword}
                         onChangeText={(text) => {
                             setConfirmPassword(text);
                             if (confirmPasswordError) setConfirmPasswordError('');
                             if (password && text !== password) {
-                                setConfirmPasswordError('Les contrasenyes no coincideixen');
+                                setConfirmPasswordError(t('register.errors.passwordsMismatch'));
                             }
                         }}
                         secureTextEntry={!showConfirmPassword}
@@ -252,19 +254,19 @@ export default function RegisterScreen({ navigation }: any) {
                         loading={loading}
                         disabled={loading}
                     >
-                        {loading ? 'Creating account...' : 'Register'}
+                        {loading ? t('register.creating') : t('register.register')}
                     </Button>
                 </View>
 
                 <View style={styles.loginContainer}>
-                    <Text
-                        style={[
-                            styles.loginText,
-                            { color: theme.colors.secondary },
-                        ]}
-                    >
-                        Already have an account?{' '}
-                    </Text>
+                        <Text
+                            style={[
+                                styles.loginText,
+                                { color: theme.colors.secondary },
+                            ]}
+                        >
+                            {t('register.alreadyHaveAccount')}{' '}
+                        </Text>
                     <TouchableOpacity
                         onPress={() => navigation.navigate('Login')}
                         disabled={loading}
@@ -277,7 +279,7 @@ export default function RegisterScreen({ navigation }: any) {
                                 },
                             ]}
                         >
-                            Login here
+                            {t('auth.loginHere')}
                         </Text>
                     </TouchableOpacity>
                 </View>

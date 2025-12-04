@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Image, GestureResponderEvent } from 'react-native';
 import { Card, Text, Chip, Button, useTheme } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Incident } from '../types';
 
@@ -24,6 +25,7 @@ export default function ReportCard({
     onDelete,
 }: Props) {
     const theme = useTheme();
+    const { t } = useTranslation();
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -62,15 +64,15 @@ export default function ReportCard({
     const getStatusLabel = (status: string) => {
         switch (status) {
             case 'waiting':
-                return 'Waiting to be accepted';
+                return t('reportCard.waiting');
             case 'in_progress':
-                return 'In progress';
+                return t('reportCard.in_progress');
             case 'accepted':
-                return 'Accepted';
+                return t('reportCard.accepted');
             case 'denied':
-                return 'Denied';
+                return t('reportCard.denied');
             case 'finished':
-                return 'Finished';
+                return t('reportCard.finished');
             default:
                 return status;
         }
@@ -136,7 +138,7 @@ export default function ReportCard({
                                 onPress={onHide}
                                 style={styles.actionButton}
                             >
-                                {isHiddenView ? 'Unhide' : 'Hide'}
+                                {isHiddenView ? t('reportCard.unhide') : t('reportCard.hide')}
                             </Button>
                         )}
 
@@ -149,7 +151,7 @@ export default function ReportCard({
                                 style={styles.actionButton}
                                 textColor={theme.colors.error}
                             >
-                                Delete
+                                {t('reportCard.delete')}
                             </Button>
                         )}
                     </View>
