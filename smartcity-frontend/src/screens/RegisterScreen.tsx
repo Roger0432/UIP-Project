@@ -29,7 +29,6 @@ export default function RegisterScreen({ navigation }: any) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    // Errors per camp
     const [nameError, setNameError] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
@@ -39,7 +38,6 @@ export default function RegisterScreen({ navigation }: any) {
     const validateInputs = () => {
         let isValid = true;
 
-        // Nom obligatori i mínim 2 caràcters
         if (!name.trim()) {
             setNameError(t('register.errors.nameRequired'));
             isValid = false;
@@ -48,7 +46,6 @@ export default function RegisterScreen({ navigation }: any) {
             isValid = false;
         }
 
-        // Email vàlid
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email) {
             setEmailError(t('auth.errors.emailRequired'));
@@ -58,7 +55,6 @@ export default function RegisterScreen({ navigation }: any) {
             isValid = false;
         }
 
-        // Password mínim 8 caràcters, 1 majúscula, 1 minúscula, 1 número
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
         if (!password) {
             setPasswordError(t('auth.errors.passwordRequired'));
@@ -84,7 +80,6 @@ export default function RegisterScreen({ navigation }: any) {
     };
 
     const handleRegister = async () => {
-        // Reset errors
         setNameError('');
         setEmailError('');
         setPasswordError('');
@@ -115,7 +110,6 @@ export default function RegisterScreen({ navigation }: any) {
         } catch (error: any) {
             console.error('Register error:', error);
             if (error.response?.status === 409 || error.response?.status === 400) {
-                // Email ja existeix o error de validació
                 setFormError('This email is already registered');
             } else if (error.response?.status === 422) {
                 setFormError('Invalid data');

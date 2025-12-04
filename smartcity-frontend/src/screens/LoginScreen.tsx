@@ -49,16 +49,14 @@ export default function LoginScreen({ navigation }: any) {
         setLoading(true);
         try {
             const response = await authAPI.login(email, password);
-            // Se asume que response = { token, user: { ... , role?: 'worker' | 'citizen' } }
 
             if (response.token && response.user) {
                 setToken(response.token);
-                setUser(response.user);      // aquí se deriva isWorker según user.role
+                setUser(response.user);
                 setIsAuthenticated(true);
 
                 setEmail('');
                 setPassword('');
-                // Navegas a donde toque (por ejemplo, raíz de la app) si aún no lo haces fuera
             } else {
                 setFormError(response.message || t('auth.errors.invalidCredentials'));
             }

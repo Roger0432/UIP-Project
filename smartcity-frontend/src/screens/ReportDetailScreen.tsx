@@ -103,7 +103,6 @@ export default function ReportDetailScreen({ route, navigation }: any) {
         setShowFullPhoto(true);
     };
 
-    // Fetch full incident details including contact info when component mounts
     React.useEffect(() => {
         const fetchIncidentDetails = async () => {
             try {

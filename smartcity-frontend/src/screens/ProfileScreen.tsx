@@ -28,7 +28,6 @@ export default function ProfileScreen({ navigation }: any) {
     const { isDark, setThemeMode } = useAppTheme();
     const { t } = useTranslation();
 
-    // Language configuration with names and flag emojis
     const languages = [
         { code: 'en', label: 'English', flag: '🇬🇧' },
         { code: 'es', label: 'Español', flag: '🇪🇸' },
@@ -63,7 +62,6 @@ export default function ProfileScreen({ navigation }: any) {
     });
     const [imageUri, setImageUri] = React.useState<string | null>(null);
 
-    // Función para subir foto a Cloudinary
     const uploadPhotoAsync = async (uri: string): Promise<string> => {
         const cloudName = 'dt2bsrv1r';
         const uploadPreset = 'UIDProject';

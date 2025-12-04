@@ -1,4 +1,3 @@
-// UserContext.tsx
 import React, { createContext, useEffect, useState, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserProfile } from '../types';
@@ -50,7 +49,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
                 if (storedUser) {
                     const parsedUser: UserProfile = JSON.parse(storedUser);
                     setUserState(parsedUser);
-                    // Derivar isWorker del rol si existe
                     if (parsedUser.role) {
                         const worker = parsedUser.role === 'worker';
                         setIsWorkerState(worker);
@@ -82,7 +80,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
             }
         } else {
             AsyncStorage.removeItem('user_data');
-            // si borras usuario, también dejas de ser worker por defecto
             setIsWorkerState(false);
             AsyncStorage.removeItem('user_is_worker');
         }

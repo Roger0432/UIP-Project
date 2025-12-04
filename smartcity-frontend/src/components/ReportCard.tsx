@@ -11,8 +11,8 @@ type Props = {
     onPress?: (e: GestureResponderEvent) => void;
     onChangeStatus?: (id: number, status: string) => void;
     onHide?: () => void;
-    isHiddenView?: boolean; // si estamos en el filtro "Hidden"
-    onDelete?: () => void; // For users to delete their own reports
+    isHiddenView?: boolean; // "Hidden" filter
+    onDelete?: () => void;
 };
 
 export default function ReportCard({
