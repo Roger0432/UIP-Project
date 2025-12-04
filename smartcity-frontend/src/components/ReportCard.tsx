@@ -11,6 +11,7 @@ type Props = {
     onChangeStatus?: (id: number, status: string) => void;
     onHide?: () => void;
     isHiddenView?: boolean; // si estamos en el filtro "Hidden"
+    onDelete?: () => void; // For users to delete their own reports
 };
 
 export default function ReportCard({
@@ -20,6 +21,7 @@ export default function ReportCard({
     onChangeStatus,
     onHide,
     isHiddenView,
+    onDelete,
 }: Props) {
     const theme = useTheme();
 
@@ -125,17 +127,32 @@ export default function ReportCard({
                         {getStatusLabel(incident.status)}
                     </Chip>
 
-                    {onHide && (
-                        <Button
-                            mode="text"
-                            compact
-                            icon={isHiddenView ? 'eye' : 'eye-off'}
-                            onPress={onHide}
-                            style={styles.hideButton}
-                        >
-                            {isHiddenView ? 'Unhide' : 'Hide'}
-                        </Button>
-                    )}
+                    <View style={styles.actionsContainer}>
+                        {onHide && (
+                            <Button
+                                mode="text"
+                                compact
+                                icon={isHiddenView ? 'eye' : 'eye-off'}
+                                onPress={onHide}
+                                style={styles.actionButton}
+                            >
+                                {isHiddenView ? 'Unhide' : 'Hide'}
+                            </Button>
+                        )}
+
+                        {!isWorker && onDelete && (
+                            <Button
+                                mode="text"
+                                compact
+                                icon="delete-outline"
+                                onPress={onDelete}
+                                style={styles.actionButton}
+                                textColor={theme.colors.error}
+                            >
+                                Delete
+                            </Button>
+                        )}
+                    </View>
                 </View>
 
                 {isWorker && onChangeStatus && false && (
@@ -181,7 +198,11 @@ const styles = StyleSheet.create({
     statusChip: {
         height: 28,
     },
-    hideButton: {
-        marginLeft: 8,
+    actionsContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    actionButton: {
+        marginLeft: 4,
     },
 });

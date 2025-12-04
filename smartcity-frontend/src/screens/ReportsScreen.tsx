@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, FlatList, StyleSheet, RefreshControl, ScrollView } from 'react-native';
+import { View, FlatList, StyleSheet, RefreshControl, ScrollView, Alert } from 'react-native';
 import {
     Text,
     useTheme,
@@ -97,6 +97,32 @@ export default function ReportsScreen({ navigation }: any) {
     const handleUnhideIncident = (id: number) => {
         const updated = hiddenIds.filter((h) => h !== id);
         saveHiddenIds(updated);
+    };
+
+    const handleDeleteIncident = async (id: number) => {
+        Alert.alert(
+            'Delete Report',
+            'Are you sure you want to delete this report? This action cannot be undone.',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await incidentsAPI.delete(id);
+                            fetchIncidents();
+                        } catch (error) {
+                            console.error('Error deleting incident:', error);
+                            Alert.alert('Error', 'Failed to delete report. Please try again.');
+                        }
+                    },
+                },
+            ]
+        );
     };
 
     const filteredAndSortedIncidents = useMemo(() => {
@@ -290,6 +316,7 @@ export default function ReportsScreen({ navigation }: any) {
                                 : handleHideIncident(item.id)
                         }
                         isHiddenView={isHiddenView}
+                        onDelete={!isWorker ? () => handleDeleteIncident(item.id) : undefined}
                     />
                 )}
                 keyExtractor={(item) => item.id.toString()}
