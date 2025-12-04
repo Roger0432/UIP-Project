@@ -8,20 +8,17 @@ app.use(express.json());
 
 const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
-// Ensure database configuration exists
 if (!DATABASE_URL) {
   console.error("ERROR: DATABASE_URL not found in environment variables");
   console.error("Make sure you have a .env file with DATABASE_URL set");
   process.exit(1);
 }
 
-// Configure connection pool
 const pool = new Pool({
   connectionString: DATABASE_URL,
   ssl: DATABASE_URL ? { rejectUnauthorized: false } : false,
 });
 
-// Try to connect to the database and check the table
 async function testDatabaseConnection() {
   console.log("Attempting to connect to the database...");
   console.log(
@@ -33,7 +30,6 @@ async function testDatabaseConnection() {
     const client = await pool.connect();
     console.log("Database connection successful");
 
-    // Check if the incidents table exists
     const tableCheck = await client.query(`
             SELECT EXISTS (
                 SELECT FROM information_schema.tables
@@ -44,7 +40,6 @@ async function testDatabaseConnection() {
     if (tableCheck.rows[0].exists) {
       console.log("Table 'incidents' exists");
 
-      // Count existing records
       const countResult = await client.query("SELECT COUNT(*) FROM incidents");
       console.log(`Current records in table: ${countResult.rows[0].count}`);
     } else {
@@ -77,7 +72,6 @@ async function testDatabaseConnection() {
   }
 }
 
-// Pool error handling
 pool.on("error", (err, client) => {
   console.error("Unexpected error in the connection pool:", err);
 });
@@ -360,7 +354,7 @@ app.delete("/api/incidents/:id", async (req, res) => {
   }
 });
 
-// GET /api/profile/:userId - Get user profile (CORREGIDO con IMAGE)
+// GET /api/profile/:userId - Get user profile
 app.get("/api/profile/:userId", async (req, res) => {
   try {
     if (!isAuth(req)) {
@@ -369,7 +363,6 @@ app.get("/api/profile/:userId", async (req, res) => {
 
     const userId = req.params.userId;
 
-    // First, check if users table exists, if not create it (CON IMAGE)
     const tableCheck = await pool.query(`
       SELECT EXISTS (
         SELECT FROM information_schema.tables
@@ -378,7 +371,6 @@ app.get("/api/profile/:userId", async (req, res) => {
     `);
 
     if (!tableCheck.rows[0].exists) {
-      // Create users table if it doesn't exist (CON IMAGE)
       await pool.query(`
         CREATE TABLE users (
           id VARCHAR(255) PRIMARY KEY,
@@ -394,7 +386,6 @@ app.get("/api/profile/:userId", async (req, res) => {
       console.log("✅ Created 'users' table WITH IMAGE column");
     }
 
-    // Try to get user profile (CON IMAGE)
     const { rows } = await pool.query(
       "SELECT id, name, email, phone, role, image, created_at, updated_at FROM users WHERE id = $1",
       [userId]
@@ -415,7 +406,7 @@ app.get("/api/profile/:userId", async (req, res) => {
       email: user.email,
       phone: user.phone,
       role: user.role,
-      image: user.image || "", // ✅ AGREGADO image
+      image: user.image || "",
       createdAt: user.created_at,
       updatedAt: user.updated_at,
     });
@@ -493,7 +484,6 @@ app.put("/api/profile/:userId", async (req, res) => {
     if (image) {
       fields.push(`image = $${idx++}`);
       params.push(image);
-      console.log("🖼️ Actualizando imagen:", image); // Debug
     }
 
     fields.push(`updated_at = NOW()`);
@@ -538,7 +528,6 @@ function generateToken(userId) {
   return `${header}.${payload}.${signature}`;
 }
 
-// Create auth table if it doesn't exist
 async function ensureAuthTable() {
   try {
     const tableCheck = await pool.query(`
@@ -577,7 +566,6 @@ app.post("/api/auth/register", async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Check if email already exists
     const existingUser = await pool.query(
       "SELECT * FROM auth WHERE email = $1",
       [email]
@@ -587,13 +575,11 @@ app.post("/api/auth/register", async (req, res) => {
       return res.status(400).json({ error: "Email already registered" });
     }
 
-    // Generate user ID
     const userId = `user_${Date.now()}`;
 
     // In production, use bcrypt. For now, we'll store a simple hash
     const passwordHash = Buffer.from(password).toString("base64");
 
-    // Create auth record
     const authResult = await pool.query(
       `INSERT INTO auth (user_id, email, password_hash, created_at, updated_at)
              VALUES ($1, $2, $3, NOW(), NOW())
@@ -601,7 +587,6 @@ app.post("/api/auth/register", async (req, res) => {
       [userId, email, passwordHash]
     );
 
-    // Ensure users table exists
     const tableCheck = await pool.query(`
             SELECT EXISTS (
                 SELECT FROM information_schema.tables
@@ -624,7 +609,6 @@ app.post("/api/auth/register", async (req, res) => {
             `);
     }
 
-    // Create user profile
     const userResult = await pool.query(
       `INSERT INTO users (id, name, email, phone, role, image, created_at, updated_at)
              VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
@@ -666,7 +650,6 @@ app.post("/api/auth/login", async (req, res) => {
       return res.status(400).json({ error: "Missing email or password" });
     }
 
-    // Find user
     const authResult = await pool.query(
       "SELECT user_id, password_hash FROM auth WHERE email = $1",
       [email]
@@ -684,7 +667,6 @@ app.post("/api/auth/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Get user profile
     const userResult = await pool.query(
       `SELECT id, name, email, phone, role, image, created_at, updated_at
        FROM users
@@ -735,7 +717,6 @@ function getLocalIP() {
   return "localhost";
 }
 
-// Start server only if DB connection is successful
 async function startServer() {
   const dbConnected = await testDatabaseConnection();
 
