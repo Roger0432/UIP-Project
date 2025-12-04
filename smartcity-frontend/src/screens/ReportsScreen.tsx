@@ -189,12 +189,6 @@ export default function ReportsScreen({ navigation }: any) {
         { key: 'hidden', label: 'Hidden', icon: 'eye-off' },
     ];
 
-    const sortOptions: { key: SortOption; label: string; icon: string }[] = [
-        { key: 'date_desc', label: 'Newest First', icon: 'sort-calendar-descending' },
-        { key: 'date_asc', label: 'Oldest First', icon: 'sort-calendar-ascending' },
-        { key: 'status', label: 'By Status', icon: 'sort-variant' },
-    ];
-
     if (loading) {
         return (
             <View style={[styles.centered, { backgroundColor: theme.colors.background }]}>
@@ -265,42 +259,6 @@ export default function ReportsScreen({ navigation }: any) {
                         </Chip>
                     ))}
                 </ScrollView>
-
-                <View style={styles.sortContainer}>
-                    <Menu
-                        visible={sortMenuVisible}
-                        onDismiss={() => setSortMenuVisible(false)}
-                        anchor={
-                            <Button
-                                mode="outlined"
-                                onPress={() => setSortMenuVisible(true)}
-                                icon={() => (
-                                    <MaterialCommunityIcons
-                                        name={sortOptions.find((s) => s.key === sortBy)?.icon as any}
-                                        size={20}
-                                        color={theme.colors.primary}
-                                    />
-                                )}
-                                style={styles.sortButton}
-                                contentStyle={styles.sortButtonContent}
-                            >
-                                {sortOptions.find((s) => s.key === sortBy)?.label}
-                            </Button>
-                        }
-                    >
-                        {sortOptions.map((option) => (
-                            <Menu.Item
-                                key={option.key}
-                                onPress={() => {
-                                    setSortBy(option.key);
-                                    setSortMenuVisible(false);
-                                }}
-                                title={option.label}
-                                leadingIcon={option.icon}
-                            />
-                        ))}
-                    </Menu>
-                </View>
             </View>
 
             <FlatList
