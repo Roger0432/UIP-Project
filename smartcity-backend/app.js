@@ -109,8 +109,8 @@ app.get("/health", async (req, res) => {
 
 const isAdmin = (req) => req.headers["x-admin"] === "true";
 const isAuth = (req) => {
-    const authHeader = req.headers["authorization"];
-    return authHeader && authHeader.startsWith('Bearer ');
+  const authHeader = req.headers["authorization"];
+  return authHeader && authHeader.startsWith("Bearer ");
 };
 
 // POST /api/incidents - Create incident
@@ -118,7 +118,16 @@ app.post("/api/incidents", async (req, res) => {
   try {
     if (!isAuth(req)) return res.status(401).json({ error: "Unauthorized" });
 
-    const { title, description, location, reporter, status, photos } = req.body;
+    const {
+      title,
+      description,
+      location,
+      reporter,
+      status,
+      photos,
+      phone,
+      email,
+    } = req.body;
     if (!title || !description || !location || !reporter) {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -126,8 +135,8 @@ app.post("/api/incidents", async (req, res) => {
     const photosArray = Array.isArray(photos) ? photos : [];
 
     const q = `INSERT INTO incidents
-                 (title, description, location, reporter, status, photos, created_at, updated_at)
-               VALUES ($1,$2,$3,$4,$5,$6, now(), now())
+                 (title, description, location, reporter, status, photos, phone, email, created_at, updated_at)
+               VALUES ($1,$2,$3,$4,$5,$6,$7,$8, now(), now())
                RETURNING *`;
     const values = [
       title,
@@ -136,6 +145,8 @@ app.post("/api/incidents", async (req, res) => {
       reporter,
       status || "open",
       JSON.stringify(photosArray),
+      phone || null,
+      email || null,
     ];
 
     const { rows } = await pool.query(q, values);
@@ -208,6 +219,8 @@ app.get("/api/incidents", async (req, res) => {
           reporter: r.reporter,
           status: r.status,
           photos: r.photos || [],
+          phone: r.phone || null,
+          email: r.email || null,
           createdAt: r.created_at,
           updatedAt: r.updated_at,
         };
@@ -236,6 +249,8 @@ app.get("/api/incidents/:id", async (req, res) => {
       reporter: r.reporter,
       status: r.status,
       photos: r.photos || [],
+      phone: r.phone || null,
+      email: r.email || null,
       createdAt: r.created_at,
       updatedAt: r.updated_at,
     });
@@ -347,25 +362,24 @@ app.delete("/api/incidents/:id", async (req, res) => {
 
 // GET /api/profile/:userId - Get user profile (CORREGIDO con IMAGE)
 app.get("/api/profile/:userId", async (req, res) => {
-    try {
+  try {
+    if (!isAuth(req)) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
 
-        if (!isAuth(req)) {
-            return res.status(401).json({ error: "Unauthorized" });
-        }
+    const userId = req.params.userId;
 
-        const userId = req.params.userId;
-
-        // First, check if users table exists, if not create it (CON IMAGE)
-        const tableCheck = await pool.query(`
+    // First, check if users table exists, if not create it (CON IMAGE)
+    const tableCheck = await pool.query(`
       SELECT EXISTS (
         SELECT FROM information_schema.tables
         WHERE table_name = 'users'
       );
     `);
 
-        if (!tableCheck.rows[0].exists) {
-            // Create users table if it doesn't exist (CON IMAGE)
-            await pool.query(`
+    if (!tableCheck.rows[0].exists) {
+      // Create users table if it doesn't exist (CON IMAGE)
+      await pool.query(`
         CREATE TABLE users (
           id VARCHAR(255) PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
@@ -377,110 +391,138 @@ app.get("/api/profile/:userId", async (req, res) => {
           updated_at TIMESTAMP DEFAULT NOW()
         );
       `);
-            console.log("✅ Created 'users' table WITH IMAGE column");
-        }
-
-        // Try to get user profile (CON IMAGE)
-        const { rows } = await pool.query(
-            "SELECT id, name, email, phone, role, image, created_at, updated_at FROM users WHERE id = $1",
-            [userId]
-        );
-
-        if (!rows[0]) {
-            return res.status(404).json({
-                error: "User not found",
-                message: "Please update your profile to create it",
-            });
-        }
-
-        const user = rows[0];
-
-        return res.status(200).json({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            role: user.role,
-            image: user.image || '', // ✅ AGREGADO image
-            createdAt: user.created_at,
-            updatedAt: user.updated_at,
-        });
-    } catch (err) {
-        console.error("❌ Error getting profile:", err);
-        return res.status(500).json({ error: "Internal server error" });
+      console.log("✅ Created 'users' table WITH IMAGE column");
     }
+
+    // Try to get user profile (CON IMAGE)
+    const { rows } = await pool.query(
+      "SELECT id, name, email, phone, role, image, created_at, updated_at FROM users WHERE id = $1",
+      [userId]
+    );
+
+    if (!rows[0]) {
+      return res.status(404).json({
+        error: "User not found",
+        message: "Please update your profile to create it",
+      });
+    }
+
+    const user = rows[0];
+
+    return res.status(200).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      image: user.image || "", // ✅ AGREGADO image
+      createdAt: user.created_at,
+      updatedAt: user.updated_at,
+    });
+  } catch (err) {
+    console.error("❌ Error getting profile:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // PUT /api/profile/:userId - Update user profile
 app.put("/api/profile/:userId", async (req, res) => {
-    try {
+  try {
+    if (!isAuth(req)) {
+      console.log("❌ No autorizado");
+      return res.status(401).json({ error: "Unauthorized" });
+    }
 
-        if (!isAuth(req)) {
-            console.log('❌ No autorizado');
-            return res.status(401).json({ error: "Unauthorized" });
-        }
+    const userId = req.params.userId;
+    const { name, email, phone, role, image } = req.body;
 
-        const userId = req.params.userId;
-        const { name, email, phone, role, image } = req.body;
+    if (!name && !email && !phone && !role && !image) {
+      return res.status(400).json({ error: "No fields to update" });
+    }
 
+    const checkUser = await pool.query("SELECT * FROM users WHERE id = $1", [
+      userId,
+    ]);
 
-        if (!name && !email && !phone && !role && !image) {
-            return res.status(400).json({ error: "No fields to update" });
-        }
-
-        const checkUser = await pool.query("SELECT * FROM users WHERE id = $1", [userId]);
-
-        if (!checkUser.rows[0]) {
-            const insertQuery = `
+    if (!checkUser.rows[0]) {
+      const insertQuery = `
         INSERT INTO users (id, name, email, phone, role, image, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
         RETURNING id, name, email, phone, role, image, created_at, updated_at
       `;
-            const { rows } = await pool.query(insertQuery, [
-                userId, name || "User", email || `${userId}@example.com`, phone || "", role || "citizen", image || ""
-            ]);
-            return res.status(201).json({
-                id: rows[0].id, name: rows[0].name, email: rows[0].email,
-                phone: rows[0].phone, role: rows[0].role, image: rows[0].image,
-                createdAt: rows[0].created_at, updatedAt: rows[0].updated_at
-            });
-        }
-
-        const fields = [];
-        const params = [];
-        let idx = 1;
-
-        if (name) { fields.push(`name = $${idx++}`); params.push(name); }
-        if (email) { fields.push(`email = $${idx++}`); params.push(email); }
-        if (phone !== undefined) { fields.push(`phone = $${idx++}`); params.push(phone); }
-        if (role) { fields.push(`role = $${idx++}`); params.push(role); }
-        if (image) {
-            fields.push(`image = $${idx++}`);
-            params.push(image);
-            console.log('🖼️ Actualizando imagen:', image); // Debug
-        }
-
-        fields.push(`updated_at = NOW()`);
-        params.push(userId);
-
-        const updateQuery = `UPDATE users SET ${fields.join(", ")} WHERE id = $${idx} RETURNING *`;
-
-        const { rows } = await pool.query(updateQuery, params);
-
-        return res.status(200).json({
-            id: rows[0].id, name: rows[0].name, email: rows[0].email,
-            phone: rows[0].phone, role: rows[0].role, image: rows[0].image,
-            createdAt: rows[0].created_at, updatedAt: rows[0].updated_at
-        });
-    } catch (err) {
-        console.error("❌ Error updating profile:", err);
-        if (err.code === "23505") {
-            return res.status(400).json({ error: "Email already in use" });
-        }
-        return res.status(500).json({ error: "Internal server error" });
+      const { rows } = await pool.query(insertQuery, [
+        userId,
+        name || "User",
+        email || `${userId}@example.com`,
+        phone || "",
+        role || "citizen",
+        image || "",
+      ]);
+      return res.status(201).json({
+        id: rows[0].id,
+        name: rows[0].name,
+        email: rows[0].email,
+        phone: rows[0].phone,
+        role: rows[0].role,
+        image: rows[0].image,
+        createdAt: rows[0].created_at,
+        updatedAt: rows[0].updated_at,
+      });
     }
-});
 
+    const fields = [];
+    const params = [];
+    let idx = 1;
+
+    if (name) {
+      fields.push(`name = $${idx++}`);
+      params.push(name);
+    }
+    if (email) {
+      fields.push(`email = $${idx++}`);
+      params.push(email);
+    }
+    if (phone !== undefined) {
+      fields.push(`phone = $${idx++}`);
+      params.push(phone);
+    }
+    if (role) {
+      fields.push(`role = $${idx++}`);
+      params.push(role);
+    }
+    if (image) {
+      fields.push(`image = $${idx++}`);
+      params.push(image);
+      console.log("🖼️ Actualizando imagen:", image); // Debug
+    }
+
+    fields.push(`updated_at = NOW()`);
+    params.push(userId);
+
+    const updateQuery = `UPDATE users SET ${fields.join(
+      ", "
+    )} WHERE id = $${idx} RETURNING *`;
+
+    const { rows } = await pool.query(updateQuery, params);
+
+    return res.status(200).json({
+      id: rows[0].id,
+      name: rows[0].name,
+      email: rows[0].email,
+      phone: rows[0].phone,
+      role: rows[0].role,
+      image: rows[0].image,
+      createdAt: rows[0].created_at,
+      updatedAt: rows[0].updated_at,
+    });
+  } catch (err) {
+    console.error("❌ Error updating profile:", err);
+    if (err.code === "23505") {
+      return res.status(400).json({ error: "Email already in use" });
+    }
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 // Helper function to generate JWT token (simple implementation)
 function generateToken(userId) {
@@ -498,16 +540,16 @@ function generateToken(userId) {
 
 // Create auth table if it doesn't exist
 async function ensureAuthTable() {
-    try {
-        const tableCheck = await pool.query(`
+  try {
+    const tableCheck = await pool.query(`
             SELECT EXISTS (
                 SELECT FROM information_schema.tables
                 WHERE table_name = 'auth'
             );
         `);
 
-        if (!tableCheck.rows[0].exists) {
-            await pool.query(`
+    if (!tableCheck.rows[0].exists) {
+      await pool.query(`
                 CREATE TABLE auth (
                                       id SERIAL PRIMARY KEY,
                                       user_id VARCHAR(255) UNIQUE NOT NULL,
@@ -517,58 +559,58 @@ async function ensureAuthTable() {
                                       updated_at TIMESTAMP DEFAULT NOW()
                 );
             `);
-            console.log("Created 'auth' table");
-        }
-    } catch (err) {
-        console.error("Error ensuring auth table:", err);
+      console.log("Created 'auth' table");
     }
+  } catch (err) {
+    console.error("Error ensuring auth table:", err);
+  }
 }
 
 ensureAuthTable();
 
 // POST /api/auth/register - Register new user
 app.post("/api/auth/register", async (req, res) => {
-    try {
-        const { email, password, name } = req.body;
+  try {
+    const { email, password, name } = req.body;
 
-        if (!email || !password || !name) {
-            return res.status(400).json({ error: "Missing required fields" });
-        }
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
-        // Check if email already exists
-        const existingUser = await pool.query(
-            "SELECT * FROM auth WHERE email = $1",
-            [email]
-        );
+    // Check if email already exists
+    const existingUser = await pool.query(
+      "SELECT * FROM auth WHERE email = $1",
+      [email]
+    );
 
-        if (existingUser.rows[0]) {
-            return res.status(400).json({ error: "Email already registered" });
-        }
+    if (existingUser.rows[0]) {
+      return res.status(400).json({ error: "Email already registered" });
+    }
 
-        // Generate user ID
-        const userId = `user_${Date.now()}`;
+    // Generate user ID
+    const userId = `user_${Date.now()}`;
 
-        // In production, use bcrypt. For now, we'll store a simple hash
-        const passwordHash = Buffer.from(password).toString("base64");
+    // In production, use bcrypt. For now, we'll store a simple hash
+    const passwordHash = Buffer.from(password).toString("base64");
 
-        // Create auth record
-        const authResult = await pool.query(
-            `INSERT INTO auth (user_id, email, password_hash, created_at, updated_at)
+    // Create auth record
+    const authResult = await pool.query(
+      `INSERT INTO auth (user_id, email, password_hash, created_at, updated_at)
              VALUES ($1, $2, $3, NOW(), NOW())
                  RETURNING user_id, email`,
-            [userId, email, passwordHash]
-        );
+      [userId, email, passwordHash]
+    );
 
-        // Ensure users table exists
-        const tableCheck = await pool.query(`
+    // Ensure users table exists
+    const tableCheck = await pool.query(`
             SELECT EXISTS (
                 SELECT FROM information_schema.tables
                 WHERE table_name = 'users'
             );
         `);
 
-        if (!tableCheck.rows[0].exists) {
-            await pool.query(`
+    if (!tableCheck.rows[0].exists) {
+      await pool.query(`
                 CREATE TABLE users (
                                        id VARCHAR(255) PRIMARY KEY,
                                        name VARCHAR(255) NOT NULL,
@@ -580,102 +622,101 @@ app.post("/api/auth/register", async (req, res) => {
                                        updated_at TIMESTAMP DEFAULT NOW()
                 );
             `);
-        }
+    }
 
-        // Create user profile
-        const userResult = await pool.query(
-            `INSERT INTO users (id, name, email, phone, role, image, created_at, updated_at)
+    // Create user profile
+    const userResult = await pool.query(
+      `INSERT INTO users (id, name, email, phone, role, image, created_at, updated_at)
              VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
                  RETURNING id, name, email, phone, role, image, created_at, updated_at`,
-            [userId, name, email, "", "citizen", ""]
-        );
+      [userId, name, email, "", "citizen", ""]
+    );
 
-        const token = generateToken(userId);
-        const user = userResult.rows[0];
+    const token = generateToken(userId);
+    const user = userResult.rows[0];
 
-        return res.status(201).json({
-            token,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                role: user.role,
-                image: user.image,
-                createdAt: user.created_at,
-                updatedAt: user.updated_at,
-            },
-        });
-    } catch (err) {
-        console.error("Error registering user:", err);
-        if (err.code === "23505") {
-            return res.status(400).json({ error: "Email already in use" });
-        }
-        return res.status(500).json({ error: "Internal server error" });
+    return res.status(201).json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        image: user.image,
+        createdAt: user.created_at,
+        updatedAt: user.updated_at,
+      },
+    });
+  } catch (err) {
+    console.error("Error registering user:", err);
+    if (err.code === "23505") {
+      return res.status(400).json({ error: "Email already in use" });
     }
+    return res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // POST /api/auth/login - Login user
 app.post("/api/auth/login", async (req, res) => {
-    try {
-        const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ error: "Missing email or password" });
-        }
+    if (!email || !password) {
+      return res.status(400).json({ error: "Missing email or password" });
+    }
 
-        // Find user
-        const authResult = await pool.query(
-            "SELECT user_id, password_hash FROM auth WHERE email = $1",
-            [email]
-        );
+    // Find user
+    const authResult = await pool.query(
+      "SELECT user_id, password_hash FROM auth WHERE email = $1",
+      [email]
+    );
 
-        if (!authResult.rows[0]) {
-            return res.status(401).json({ error: "Invalid email or password" });
-        }
+    if (!authResult.rows[0]) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
 
-        const authRecord = authResult.rows[0];
+    const authRecord = authResult.rows[0];
 
-        // Verify password (simple comparison - in production use bcrypt)
-        const passwordHash = Buffer.from(password).toString("base64");
-        if (passwordHash !== authRecord.password_hash) {
-            return res.status(401).json({ error: "Invalid email or password" });
-        }
+    // Verify password (simple comparison - in production use bcrypt)
+    const passwordHash = Buffer.from(password).toString("base64");
+    if (passwordHash !== authRecord.password_hash) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
 
-        // Get user profile
-        const userResult = await pool.query(
-            `SELECT id, name, email, phone, role, image, created_at, updated_at
+    // Get user profile
+    const userResult = await pool.query(
+      `SELECT id, name, email, phone, role, image, created_at, updated_at
        FROM users
        WHERE id = $1`,
-            [authRecord.user_id]
-        );
+      [authRecord.user_id]
+    );
 
-        if (!userResult.rows[0]) {
-            return res.status(404).json({ error: "User profile not found" });
-        }
-
-        const token = generateToken(authRecord.user_id);
-        const user = userResult.rows[0];
-
-        return res.status(200).json({
-            token,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                role: user.role,
-                image: user.image,
-                createdAt: user.created_at,
-                updatedAt: user.updated_at,
-            },
-        });
-    } catch (err) {
-        console.error("Error logging in:", err);
-        return res.status(500).json({ error: "Internal server error" });
+    if (!userResult.rows[0]) {
+      return res.status(404).json({ error: "User profile not found" });
     }
-});
 
+    const token = generateToken(authRecord.user_id);
+    const user = userResult.rows[0];
+
+    return res.status(200).json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        image: user.image,
+        createdAt: user.created_at,
+        updatedAt: user.updated_at,
+      },
+    });
+  } catch (err) {
+    console.error("Error logging in:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 const HOST = "0.0.0.0";
