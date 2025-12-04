@@ -9,9 +9,16 @@ type Props = {
     isWorker: boolean;
     onPress?: (e: GestureResponderEvent) => void;
     onChangeStatus?: (id: number, status: string) => void;
+    onHide?: () => void;
 };
 
-export default function ReportCard({ incident, isWorker, onPress, onChangeStatus }: Props) {
+export default function ReportCard({
+                                       incident,
+                                       isWorker,
+                                       onPress,
+                                       onChangeStatus,
+                                       onHide,
+                                   }: Props) {
     const theme = useTheme();
 
     const getStatusColor = (status: string) => {
@@ -84,7 +91,7 @@ export default function ReportCard({ incident, isWorker, onPress, onChangeStatus
                     />
                 )}
 
-                <View style={styles.statusContainer}>
+                <View style={styles.statusRow}>
                     <Chip
                         icon={() => (
                             <MaterialCommunityIcons
@@ -101,6 +108,18 @@ export default function ReportCard({ incident, isWorker, onPress, onChangeStatus
                     >
                         {getStatusLabel(incident.status)}
                     </Chip>
+
+                    {onHide && (
+                        <Button
+                            mode="text"
+                            compact
+                            icon="eye-off"
+                            onPress={onHide}
+                            style={styles.hideButton}
+                        >
+                            Hide
+                        </Button>
+                    )}
                 </View>
 
                 {/* Opcional: ya no se usa onChangeStatus desde lista */}
@@ -129,11 +148,15 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 12,
     },
-    statusContainer: {
+    statusRow: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
     },
     statusChip: {
         height: 28,
+    },
+    hideButton: {
+        marginLeft: 8,
     },
 });

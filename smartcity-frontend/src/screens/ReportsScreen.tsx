@@ -8,9 +8,9 @@ import {
     Chip,
     Menu,
     Button,
-    IconButton,
 } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { incidentsAPI } from '../services/api';
 import { Incident } from '../types';
 import ReportCard from '../components/ReportCard';
@@ -18,6 +18,8 @@ import { useUser } from '../context/UserContext';
 
 type StatusFilter = 'all' | 'waiting' | 'accepted' | 'in_progress' | 'denied' | 'finished';
 type SortOption = 'date_desc' | 'date_asc' | 'status';
+
+const HIDDEN_KEY = 'hidden_incident_ids';
 
 export default function ReportsScreen({ navigation }: any) {
     const theme = useTheme();
@@ -29,6 +31,32 @@ export default function ReportsScreen({ navigation }: any) {
     const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
     const [sortBy, setSortBy] = useState<SortOption>('date_desc');
     const [sortMenuVisible, setSortMenuVisible] = useState(false);
+    const [hiddenIds, setHiddenIds] = useState<number[]>([]);
+
+    // Cargar ids ocultos al iniciar
+    useEffect(() => {
+        const loadHidden = async () => {
+            try {
+                const raw = await AsyncStorage.getItem(HIDDEN_KEY);
+                if (raw) {
+                    const parsed: number[] = JSON.parse(raw);
+                    setHiddenIds(parsed);
+                }
+            } catch (e) {
+                console.error('Error loading hidden incidents', e);
+            }
+        };
+        loadHidden();
+    }, []);
+
+    const saveHiddenIds = async (ids: number[]) => {
+        setHiddenIds(ids);
+        try {
+            await AsyncStorage.setItem(HIDDEN_KEY, JSON.stringify(ids));
+        } catch (e) {
+            console.error('Error saving hidden incidents', e);
+        }
+    };
 
     const fetchIncidents = async () => {
         try {
@@ -62,11 +90,16 @@ export default function ReportsScreen({ navigation }: any) {
         navigation.navigate('ReportDetail', { incident: item, isWorker });
     };
 
-    // Filter and sort logic
-    const filteredAndSortedIncidents = useMemo(() => {
-        let filtered = [...incidents];
+    // Ocultar un incidente solo en cliente
+    const handleHideIncident = (id: number) => {
+        const updated = [...new Set([...hiddenIds, id])];
+        saveHiddenIds(updated);
+    };
 
-        // Apply search filter
+    // Filter and sort logic (incluye ocultos)
+    const filteredAndSortedIncidents = useMemo(() => {
+        let filtered = incidents.filter((i) => !hiddenIds.includes(i.id));
+
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter(
@@ -78,12 +111,10 @@ export default function ReportsScreen({ navigation }: any) {
             );
         }
 
-        // Apply status filter
         if (statusFilter !== 'all') {
             filtered = filtered.filter((incident) => incident.status === statusFilter);
         }
 
-        // Apply sorting
         filtered.sort((a, b) => {
             switch (sortBy) {
                 case 'date_desc':
@@ -99,11 +130,12 @@ export default function ReportsScreen({ navigation }: any) {
         });
 
         return filtered;
-    }, [incidents, searchQuery, statusFilter, sortBy]);
+    }, [incidents, searchQuery, statusFilter, sortBy, hiddenIds]);
 
     const getStatusCount = (status: StatusFilter) => {
-        if (status === 'all') return incidents.length;
-        return incidents.filter((i) => i.status === status).length;
+        const visible = incidents.filter((i) => !hiddenIds.includes(i.id));
+        if (status === 'all') return visible.length;
+        return visible.filter((i) => i.status === status).length;
     };
 
     const statusFilters: { key: StatusFilter; label: string; icon: string }[] = [
@@ -235,7 +267,8 @@ export default function ReportsScreen({ navigation }: any) {
                         incident={item}
                         isWorker={isWorker}
                         onPress={() => handleOpenDetail(item)}
-                        onChangeStatus={undefined}
+                        // nuevo callback para ocultar solo en esta app/usuario
+                        onHide={() => handleHideIncident(item.id)}
                     />
                 )}
                 keyExtractor={(item) => item.id.toString()}
