@@ -148,7 +148,6 @@ export default function ProfileScreen({ navigation }: any) {
             if (newImageUrl !== profile?.image) payload.image = newImageUrl;
 
             if (Object.keys(payload).length === 0) {
-                Alert.alert('Info', 'No hay cambios para guardar');
                 setEditVisible(false);
                 return;
             }
@@ -156,10 +155,9 @@ export default function ProfileScreen({ navigation }: any) {
             const saved = await profilesAPI.updateProfile(userId, payload);
             setProfile(saved);
             setEditVisible(false);
-            Alert.alert('Éxito', 'Perfil actualizado correctamente');
         } catch (err: any) {
             console.error('Error saving profile', err);
-            Alert.alert('Error', err.message || 'Error al actualizar perfil');
+            Alert.alert('Error', err.message);
         } finally {
             setUpdating(false);
         }
@@ -180,12 +178,9 @@ export default function ProfileScreen({ navigation }: any) {
     };
 
     const handleLogout = async () => {
-        console.log('ProfileScreen: handleLogout pressed');
         if (Platform.OS === 'web') {
-            console.log('ProfileScreen: running on web - calling logout() directly');
             try {
                 await logout();
-                console.log('ProfileScreen: logout() finished (web)');
             } catch (e) {
                 console.error('ProfileScreen: logout error (web)', e);
             }
@@ -201,10 +196,8 @@ export default function ProfileScreen({ navigation }: any) {
             {
                 text: t('profile.logout'),
                 onPress: async () => {
-                    console.log('ProfileScreen: logout confirmed - calling logout()');
                     try {
                         await logout();
-                        console.log('ProfileScreen: logout() finished');
                     } catch (e) {
                         console.error('ProfileScreen: logout error', e);
                     }
