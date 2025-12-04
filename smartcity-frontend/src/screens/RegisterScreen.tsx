@@ -127,17 +127,17 @@ export default function RegisterScreen({ navigation }: any) {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.container}
+            style={[styles.container, { backgroundColor: theme.colors.background }]}
         >
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.headerContainer}>
-                    <Text style={[styles.title, { color: theme.colors.primary }]}> 
+                    <Text style={[styles.title, { color: theme.colors.primary }]}>
                         {t('app.name')}
                     </Text>
-                    <Text style={[styles.subtitle, { color: theme.colors.secondary }]}> 
+                    <Text style={[styles.subtitle, { color: theme.colors.secondary }]}>
                         {t('register.title')}
                     </Text>
                 </View>
@@ -253,14 +253,14 @@ export default function RegisterScreen({ navigation }: any) {
                 </View>
 
                 <View style={styles.loginContainer}>
-                        <Text
-                            style={[
-                                styles.loginText,
-                                { color: theme.colors.secondary },
-                            ]}
-                        >
-                            {t('register.alreadyHaveAccount')}{' '}
-                        </Text>
+                    <Text
+                        style={[
+                            styles.loginText,
+                            { color: theme.colors.secondary },
+                        ]}
+                    >
+                        {t('register.alreadyHaveAccount')}{' '}
+                    </Text>
                     <TouchableOpacity
                         onPress={() => navigation.navigate('Login')}
                         disabled={loading}

@@ -78,7 +78,7 @@ export default function LoginScreen({ navigation }: any) {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.container}
+            style={[styles.container, { backgroundColor: theme.colors.background }]}
         >
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
@@ -184,7 +184,7 @@ export default function LoginScreen({ navigation }: any) {
                             { color: theme.colors.secondary },
                         ]}
                     >
-                            {t('auth.noAccount')}{' '}
+                        {t('auth.noAccount')}{' '}
                     </Text>
                     <TouchableOpacity
                         onPress={() => navigation.navigate('Register')}

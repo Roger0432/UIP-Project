@@ -1,7 +1,7 @@
 # SmartCity Frontend
 
 ## Description
-This is the mobile client for the SmartCity application. It is built using React Native and Expo. It allows citizens to report urban incidents, view them on a map, and manage their profile.
+This is the mobile client for the SmartCity application. It is built using React Native and Expo. It allows citizens to report urban incidents, and manage their profile.
 
 ## Prerequisites
 - Node.js (v14 or higher)
@@ -15,7 +15,6 @@ This is the mobile client for the SmartCity application. It is built using React
 - [@react-navigation/native & @react-navigation/bottom-tabs](https://reactnavigation.org/): Routing and navigation
 - [expo-location](https://docs.expo.dev/versions/latest/sdk/location/): Geolocation access
 - [expo-image-picker](https://docs.expo.dev/versions/latest/sdk/imagepicker/): Access to camera and photo library
-- [react-native-maps](https://github.com/react-native-maps/react-native-maps): Map components for iOS and Android
 - [react-native-paper](https://callstack.github.io/react-native-paper/): Material Design for React Native
 - [react-hook-form](https://react-hook-form.com/): Form validation
 
