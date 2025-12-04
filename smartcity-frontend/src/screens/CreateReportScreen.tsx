@@ -257,10 +257,10 @@ export default function CreateReportScreen({ navigation }: any) {
                 label="Description"
                 value={formData.description}
                 onChangeText={(text) => setFormData({ ...formData, description: text })}
-                style={styles.input}
                 mode="outlined"
                 multiline
-                numberOfLines={4}
+                style={styles.input}
+                contentStyle={{ minHeight: 120, textAlignVertical: 'top' }}
             />
 
             <View style={styles.locationContainer}>
