@@ -4,6 +4,7 @@ import { initReactI18next } from 'react-i18next';
 import en from './locales/en.json';
 import es from './locales/es.json';
 import cs from './locales/cs.json';
+import ca from './locales/ca.json';
 
 i18n.use(initReactI18next).init({
   compatibilityJSON: 'v4',
@@ -11,6 +12,7 @@ i18n.use(initReactI18next).init({
     en: { translation: en },
     es: { translation: es },
     cs: { translation: cs },
+    ca: { translation: ca },
   },
   lng: 'en',
   fallbackLng: 'en',

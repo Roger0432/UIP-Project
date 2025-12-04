@@ -1,0 +1,129 @@
+{
+  "app": { "name": "SmartCity" },
+
+  "auth": {
+    "login": "Inicia sessió",
+    "loggingIn": "Iniciant sessió...",
+    "email": "Correu",
+    "password": "Contrasenya",
+    "loginSubtitle": "Inicia sessió al teu compte",
+    "noAccount": "No tens compte?",
+    "registerHere": "Registra't aquí",
+    "errors": {
+      "emailRequired": "El correu és obligatori",
+      "passwordRequired": "La contrasenya és obligatòria",
+      "invalidEmail": "Introdueix un correu vàlid",
+      "invalidCredentials": "Usuari o contrasenya incorrectes"
+    },
+    "or": "o",
+    "loginHere": "Inicia sessió aquí"
+  },
+
+  "register": {
+    "title": "Crea el teu compte",
+    "fullName": "Nom complet",
+    "email": "Correu",
+    "password": "Contrasenya",
+    "confirmPassword": "Confirmar contrasenya",
+    "register": "Registra't",
+    "creating": "Creant compte...",
+    "alreadyHaveAccount": "Ja tens compte?",
+    "errors": {
+      "nameRequired": "El nom és obligatori",
+      "nameMin": "El nom ha de tenir almenys 2 caràcters",
+      "passwordMin": "La contrasenya ha de tenir almenys 8 caràcters",
+      "passwordComplexity": "Mínim 1 majúscula, 1 minúscula i 1 número",
+      "confirmRequired": "Has de confirmar la contrasenya",
+      "passwordsMismatch": "Les contrasenyes no coincideixen"
+    }
+  },
+
+  "reports": {
+    "searchPlaceholder": "Cercar informes...",
+    "noReports": "No s'han trobat informes",
+    "tryAdjust": "Prova a ajustar els filtres",
+    "noAvailable": "No hi ha informes disponibles",
+    "filters": {
+      "all": "Tots",
+      "waiting": "En espera",
+      "accepted": "Acceptats",
+      "in_progress": "En curs",
+      "finished": "Finalitzats",
+      "denied": "Denegats",
+      "hidden": "Ocults"
+    },
+    "deleteTitle": "Eliminar informe",
+    "deleteConfirmMessage": "Estàs segur de que vols eliminar aquest informe? Aquesta acció no es pot desfer.",
+    "deleteCancel": "Cancelar",
+    "deleteConfirm": "Eliminar",
+    "deleteError": "Error al eliminar l'informe. Torna-ho a provar."
+  },
+
+  "reportCard": {
+    "waiting": "En espera de ser acceptat",
+    "in_progress": "En curs",
+    "accepted": "Acceptat",
+    "denied": "Denegat",
+    "finished": "Finalitzat",
+    "hide": "Amagar",
+    "unhide": "Mostrar",
+    "delete": "Eliminar"
+  },
+
+  "reportDetail": {
+    "description": "Descripció",
+    "dateTime": "Data i hora",
+    "location": "Ubicació",
+    "reportedBy": "Denunciat per",
+    "accept": "Acceptar",
+    "deny": "Denegar",
+    "markInProgress": "Marcar com en curs",
+    "markFinished": "Marcar com finalitzat"
+  },
+
+  "createReport": {
+    "permissionTitle": "Permís necessari",
+    "permissionPhotos": "Es requereix permís per a la galeria!",
+    "permissionLocation": "Es requereix permís de localització!",
+    "name": "Nom",
+    "phone": "Número de telèfon",
+    "mail": "Correu",
+    "title": "Títol de la incidència",
+    "description": "Descripció",
+    "location": "Ubicació",
+    "selectLocation": "Selecciona la teva ubicació",
+    "photos": "Fotos",
+    "createReport": "Crear informe",
+    "successTitle": "Éxito",
+    "successMessage": "L'informe s'ha creat correctament!",
+    "error": "Error",
+    "fillRequired": "Omple tots els camps obligatoris",
+    "failedCreate": "No s'ha pogut crear l'informe. Torna-ho a provar.",
+    "ok": "OK"
+  },
+
+  "profile": {
+    "phone": "Telèfon",
+    "mail": "Correu",
+    "darkMode": "Mode fosc",
+    "darkModeDesc": "Tria el teu tema",
+    "workerMode": "Mode treballador",
+    "workerModeDesc": "Habilita si ets treballador municipal",
+    "logout": "Tancar sessió",
+    "editProfile": "Editar perfil",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "language": "Idioma",
+    "chooseLanguage": "Tria idioma",
+    "unnamed": "Usuari sense nom",
+    "logoutConfirmTitle": "Tancar sessió",
+    "logoutConfirmMessage": "Estàs segur de que vols tancar sessió?"
+  },
+
+  "navigation": {
+    "reports": "Informes",
+    "create": "Crear",
+    "createReport": "Crear informe",
+    "profile": "Perfil"
+  }
+}
