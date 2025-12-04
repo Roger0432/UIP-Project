@@ -1,3 +1,4 @@
+//We do it together, eachone has put what he needs for his frontend
 import axios from 'axios';
 import { Incident, CreateIncidentData } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -5,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const API_BASE_URL = 'http://10.0.17.125:5000'; //arnau
 //const API_BASE_URL = 'http://10.0.17.180:5000'; //roger
 
-console.log('🌐 API conectando a:', API_BASE_URL);
+console.log('API connected to: ', API_BASE_URL);
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -24,11 +25,11 @@ api.interceptors.request.use(
         } else {
             config.headers['authorization'] = 'Bearer dummy-token';
         }
-        console.log(`📤 ${config.method?.toUpperCase()} ${config.url}`);
+        console.log(` ${config.method?.toUpperCase()} ${config.url}`);
         return config;
     },
     (error) => {
-        console.error('❌ Request Error:', error);
+        console.error('Request Error:', error);
         return Promise.reject(error);
     }
 );
@@ -36,20 +37,14 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
     (response) => {
-        console.log(`✅ ${response.status} ${response.config.url}`);
+        console.log(`${response.status} ${response.config.url}`);
         return response;
     },
     (error) => {
         if (error.code === 'ECONNABORTED') {
-            console.error('⏱️ Timeout - El servidor tardó demasiado');
-        } else if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
-            console.error('🌐 Network Error - No se puede conectar al backend');
-            console.error('   URL:', API_BASE_URL);
-            console.error('   ¿Backend corriendo? ¿Mismo WiFi?');
-        } else if (error.response) {
-            console.error(`❌ ${error.response.status}:`, error.response.data?.error || error.message);
+            console.error('Timeout - The server did not respond in time.');
         } else {
-            console.error('❌ Error:', error.message);
+            console.error('Error:', error.message);
         }
         return Promise.reject(error);
     }
@@ -106,12 +101,6 @@ export const incidentsAPI = {
 export const profilesAPI = {
     getProfile: async (userId: string) => {
         const response = await api.get(`/api/profile/${userId}`);
-        console.log('👤 Profile loaded:', {
-            id: response.data.id,
-            name: response.data.name,
-            image: response.data.image ? `${response.data.image.substring(0, 50)}...` : 'null',
-            role: response.data.role
-        });
         return response.data;
     },
 
@@ -120,16 +109,10 @@ export const profilesAPI = {
         email?: string;
         phone?: string;
         role?: string;
-        image?: string;  // ✅ AGREGADO image
+        image?: string;
     }) => {
-        console.log('📤 Updating profile:', {
-            userId,
-            ...data,
-            image: data.image ? `${data.image.substring(0, 50)}...` : undefined
-        });
-
         const response = await api.put(`/api/profile/${userId}`, data);
-        console.log('✅ Profile updated:', response.data);
+        console.log('Profile updated:', response.data);
         return response.data;
     },
 };

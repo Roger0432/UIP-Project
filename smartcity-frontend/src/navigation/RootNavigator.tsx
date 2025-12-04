@@ -1,3 +1,4 @@
+//we do it together, eachone was putting the navigation on the screen as they went along.
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AppNavigator from './AppNavigator';

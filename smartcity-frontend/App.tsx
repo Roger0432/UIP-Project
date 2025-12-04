@@ -1,9 +1,9 @@
+//Roger
 import React from 'react';
 import './src/i18n';
 import { PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import AppNavigator from './src/navigation/AppNavigator';
 import { UserProvider } from './src/context/UserContext';
 import { ThemeProvider, useAppTheme } from './src/context/ThemeContext';
 import RootNavigator from './src/navigation/RootNavigator';

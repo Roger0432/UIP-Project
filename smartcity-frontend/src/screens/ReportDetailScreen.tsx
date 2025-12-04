@@ -1,3 +1,4 @@
+//Roger
 import React, { useState } from 'react';
 import { View, StyleSheet, Image, ScrollView, Linking, Pressable, Modal, Dimensions } from 'react-native';
 import { Text, useTheme, Chip, Button, IconButton, Card, Divider, Avatar } from 'react-native-paper';
