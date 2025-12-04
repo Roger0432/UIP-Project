@@ -14,13 +14,13 @@ type Props = {
 };
 
 export default function ReportCard({
-                                       incident,
-                                       isWorker,
-                                       onPress,
-                                       onChangeStatus,
-                                       onHide,
-                                       isHiddenView,
-                                   }: Props) {
+    incident,
+    isWorker,
+    onPress,
+    onChangeStatus,
+    onHide,
+    isHiddenView,
+}: Props) {
     const theme = useTheme();
 
     const getStatusColor = (status: string) => {
@@ -74,6 +74,15 @@ export default function ReportCard({
         }
     };
 
+    const formatDate = (dateString: string) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
     return (
         <Card
             style={[styles.card, { backgroundColor: theme.colors.surface }]}
@@ -81,9 +90,14 @@ export default function ReportCard({
             onPress={onPress}
         >
             <Card.Content>
-                <Text variant="titleMedium" style={styles.cardTitle}>
-                    {incident.title}
-                </Text>
+                <View style={styles.titleRow}>
+                    <Text variant="titleMedium" style={styles.cardTitle}>
+                        {incident.title}
+                    </Text>
+                    <Text variant="bodySmall" style={styles.dateText}>
+                        {formatDate(incident.createdAt)}
+                    </Text>
+                </View>
 
                 {incident.photos && incident.photos.length > 0 && (
                     <Image
@@ -137,9 +151,21 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         borderRadius: 12,
     },
+    titleRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: 12,
+    },
     cardTitle: {
         fontWeight: '600',
-        marginBottom: 12,
+        flex: 1,
+        marginRight: 8,
+    },
+    dateText: {
+        fontSize: 12,
+        color: '#666',
+        fontWeight: '500',
     },
     cardImage: {
         width: '100%',
