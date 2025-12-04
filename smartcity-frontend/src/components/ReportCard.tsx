@@ -10,6 +10,7 @@ type Props = {
     onPress?: (e: GestureResponderEvent) => void;
     onChangeStatus?: (id: number, status: string) => void;
     onHide?: () => void;
+    isHiddenView?: boolean; // si estamos en el filtro "Hidden"
 };
 
 export default function ReportCard({
@@ -18,21 +19,22 @@ export default function ReportCard({
                                        onPress,
                                        onChangeStatus,
                                        onHide,
+                                       isHiddenView,
                                    }: Props) {
     const theme = useTheme();
 
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'waiting':
-                return '#E57373';          // Waiting to be accepted
+                return '#E57373';
             case 'in_progress':
-                return '#FFB74D';          // In progress
+                return '#FFB74D';
             case 'accepted':
-                return '#81C784';          // Accepted
+                return '#81C784';
             case 'denied':
-                return '#9E9E9E';          // Denied
+                return '#9E9E9E';
             case 'finished':
-                return '#4CAF50';          // Finished
+                return '#4CAF50';
             default:
                 return theme.colors.primary;
         }
@@ -113,20 +115,17 @@ export default function ReportCard({
                         <Button
                             mode="text"
                             compact
-                            icon="eye-off"
+                            icon={isHiddenView ? 'eye' : 'eye-off'}
                             onPress={onHide}
                             style={styles.hideButton}
                         >
-                            Hide
+                            {isHiddenView ? 'Unhide' : 'Hide'}
                         </Button>
                     )}
                 </View>
 
-                {/* Opcional: ya no se usa onChangeStatus desde lista */}
                 {isWorker && onChangeStatus && false && (
-                    <View style={{ marginTop: 12 }}>
-                        {/* botones desactivados */}
-                    </View>
+                    <View style={{ marginTop: 12 }} />
                 )}
             </Card.Content>
         </Card>

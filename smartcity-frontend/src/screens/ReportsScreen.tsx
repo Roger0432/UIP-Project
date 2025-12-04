@@ -16,7 +16,7 @@ import { Incident } from '../types';
 import ReportCard from '../components/ReportCard';
 import { useUser } from '../context/UserContext';
 
-type StatusFilter = 'all' | 'waiting' | 'accepted' | 'in_progress' | 'denied' | 'finished';
+type StatusFilter = 'all' | 'waiting' | 'accepted' | 'in_progress' | 'denied' | 'finished' | 'hidden';
 type SortOption = 'date_desc' | 'date_asc' | 'status';
 
 const HIDDEN_KEY = 'hidden_incident_ids';
@@ -33,7 +33,6 @@ export default function ReportsScreen({ navigation }: any) {
     const [sortMenuVisible, setSortMenuVisible] = useState(false);
     const [hiddenIds, setHiddenIds] = useState<number[]>([]);
 
-    // Cargar ids ocultos al iniciar
     useEffect(() => {
         const loadHidden = async () => {
             try {
@@ -90,15 +89,27 @@ export default function ReportsScreen({ navigation }: any) {
         navigation.navigate('ReportDetail', { incident: item, isWorker });
     };
 
-    // Ocultar un incidente solo en cliente
     const handleHideIncident = (id: number) => {
         const updated = [...new Set([...hiddenIds, id])];
         saveHiddenIds(updated);
     };
 
-    // Filter and sort logic (incluye ocultos)
+    const handleUnhideIncident = (id: number) => {
+        const updated = hiddenIds.filter((h) => h !== id);
+        saveHiddenIds(updated);
+    };
+
     const filteredAndSortedIncidents = useMemo(() => {
-        let filtered = incidents.filter((i) => !hiddenIds.includes(i.id));
+        let base = incidents;
+
+        // Si estamos en "hidden", partimos solo de los ocultos.
+        if (statusFilter === 'hidden') {
+            base = incidents.filter((i) => hiddenIds.includes(i.id));
+        } else {
+            base = incidents.filter((i) => !hiddenIds.includes(i.id));
+        }
+
+        let filtered = [...base];
 
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase();
@@ -111,7 +122,7 @@ export default function ReportsScreen({ navigation }: any) {
             );
         }
 
-        if (statusFilter !== 'all') {
+        if (statusFilter !== 'all' && statusFilter !== 'hidden') {
             filtered = filtered.filter((incident) => incident.status === statusFilter);
         }
 
@@ -133,6 +144,10 @@ export default function ReportsScreen({ navigation }: any) {
     }, [incidents, searchQuery, statusFilter, sortBy, hiddenIds]);
 
     const getStatusCount = (status: StatusFilter) => {
+        if (status === 'hidden') {
+            return hiddenIds.length;
+        }
+
         const visible = incidents.filter((i) => !hiddenIds.includes(i.id));
         if (status === 'all') return visible.length;
         return visible.filter((i) => i.status === status).length;
@@ -145,6 +160,7 @@ export default function ReportsScreen({ navigation }: any) {
         { key: 'in_progress', label: 'In Progress', icon: 'progress-clock' },
         { key: 'finished', label: 'Finished', icon: 'check-decagram' },
         { key: 'denied', label: 'Denied', icon: 'close-circle' },
+        { key: 'hidden', label: 'Hidden', icon: 'eye-off' },
     ];
 
     const sortOptions: { key: SortOption; label: string; icon: string }[] = [
@@ -161,6 +177,8 @@ export default function ReportsScreen({ navigation }: any) {
         );
     }
 
+    const isHiddenView = statusFilter === 'hidden';
+
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
             <View style={styles.header}>
@@ -169,7 +187,8 @@ export default function ReportsScreen({ navigation }: any) {
                         {isWorker ? 'All reports' : 'Your reports'}
                     </Text>
                     <Text variant="bodyMedium" style={styles.countText}>
-                        {filteredAndSortedIncidents.length} {filteredAndSortedIncidents.length === 1 ? 'report' : 'reports'}
+                        {filteredAndSortedIncidents.length}{' '}
+                        {filteredAndSortedIncidents.length === 1 ? 'report' : 'reports'}
                     </Text>
                 </View>
 
@@ -182,7 +201,6 @@ export default function ReportsScreen({ navigation }: any) {
                     clearIcon="close"
                 />
 
-                {/* Status Filters */}
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -222,7 +240,6 @@ export default function ReportsScreen({ navigation }: any) {
                     ))}
                 </ScrollView>
 
-                {/* Sort Options */}
                 <View style={styles.sortContainer}>
                     <Menu
                         visible={sortMenuVisible}
@@ -267,8 +284,12 @@ export default function ReportsScreen({ navigation }: any) {
                         incident={item}
                         isWorker={isWorker}
                         onPress={() => handleOpenDetail(item)}
-                        // nuevo callback para ocultar solo en esta app/usuario
-                        onHide={() => handleHideIncident(item.id)}
+                        onHide={() =>
+                            isHiddenView
+                                ? handleUnhideIncident(item.id)
+                                : handleHideIncident(item.id)
+                        }
+                        isHiddenView={isHiddenView}
                     />
                 )}
                 keyExtractor={(item) => item.id.toString()}
