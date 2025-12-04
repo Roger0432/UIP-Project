@@ -1,3 +1,4 @@
+//Arnau
 export interface Incident {
     id: number;
     title: string;

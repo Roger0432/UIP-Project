@@ -1,3 +1,4 @@
+//Arnau
 import React from 'react';
 import { View, StyleSheet, ScrollView, ActivityIndicator, Alert, Platform } from 'react-native';
 import {

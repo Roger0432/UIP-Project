@@ -1,3 +1,4 @@
+//Arnau
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, FlatList, StyleSheet, RefreshControl, ScrollView, Alert } from 'react-native';
 import {

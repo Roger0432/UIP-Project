@@ -1,3 +1,4 @@
+//arnau
 import React from 'react';
 import { View, StyleSheet, Image, GestureResponderEvent } from 'react-native';
 import { Card, Text, Chip, Button, useTheme } from 'react-native-paper';
