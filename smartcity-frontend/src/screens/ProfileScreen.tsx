@@ -295,6 +295,7 @@ export default function ProfileScreen({ navigation }: any) {
                         <List.Item title="English" onPress={() => changeLanguage('en')} />
                         <List.Item title="Español" onPress={() => changeLanguage('es')} />
                         <List.Item title="Čeština" onPress={() => changeLanguage('cs')} />
+                        <List.Item title="Català" onPress={() => changeLanguage('ca')} />
                     </Dialog.Content>
                     <Dialog.Actions>
                         <Button onPress={() => setLangDialogVisible(false)}>{t('profile.cancel')}</Button>
