@@ -188,11 +188,11 @@ export default function CreateReportScreen({ navigation }: any) {
                         const data = await profilesAPI.getProfile(randomUserId);
                         setFormData((prev) => ({ ...prev, reporter: data.name || '', phone: data.phone || '', email: data.email || '' }));
                     } catch (err: any) {
-                    if (err?.response?.status === 404) {
-                        // user not found – keep defaults blank so user can fill them
-                    } else {
-                        console.error('Error fetching profile for report:', err);
-                    }
+                        if (err?.response?.status === 404) {
+                            // user not found – keep defaults blank so user can fill them
+                        } else {
+                            console.error('Error fetching profile for report:', err);
+                        }
                     }
                 }
             } catch (err) {
@@ -210,9 +210,6 @@ export default function CreateReportScreen({ navigation }: any) {
             style={[styles.container, { backgroundColor: theme.colors.background }]}
             contentContainerStyle={styles.content}
         >
-            <Text variant="headlineMedium" style={styles.title}>
-                Create a new report
-            </Text>
 
             {profileLoading && (
                 <ActivityIndicator size="small" color={theme.colors.primary} style={{ marginBottom: 12 }} />

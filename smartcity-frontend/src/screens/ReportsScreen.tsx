@@ -202,15 +202,7 @@ export default function ReportsScreen({ navigation }: any) {
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
             <View style={styles.header}>
-                <View style={styles.headerTop}>
-                    <Text variant="headlineMedium" style={styles.headerTitle}>
-                        {isWorker ? 'All reports' : 'Your reports'}
-                    </Text>
-                    <Text variant="bodyMedium" style={styles.countText}>
-                        {filteredAndSortedIncidents.length}{' '}
-                        {filteredAndSortedIncidents.length === 1 ? 'report' : 'reports'}
-                    </Text>
-                </View>
+
 
                 <Searchbar
                     placeholder="Search reports..."

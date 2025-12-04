@@ -58,10 +58,10 @@ export default function AppNavigator() {
 
             {!isWorker && (
                 <Tab.Screen
-                    name="Create"
+                    name="Create a report"
                     component={CreateReportScreen}
                     options={{
-                        title: 'Create',
+                        title: 'Create a report',
                         tabBarLabel: 'Create',
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons
