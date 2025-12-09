@@ -4,7 +4,7 @@ import { Incident, CreateIncidentData } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //const API_BASE_URL = 'http://10.0.17.125:5000'; //arnau
-const API_BASE_URL = 'http://10.0.17.180:5000'; //roger
+const API_BASE_URL = 'http://10.0.17.31:5000'; //roger
 
 console.log('API connected to: ', API_BASE_URL);
 
